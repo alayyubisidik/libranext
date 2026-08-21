@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\SetupAdminController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\BorrowingController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MemberController;
@@ -33,6 +34,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('books', BookController::class)->except(['show']);
         Route::resource('members', MemberController::class);
+        Route::resource('borrowings', BorrowingController::class)->only(['index', 'create', 'store', 'show']);
     });
 });
 

@@ -125,25 +125,25 @@
 
 ## Phase 9 — Borrowing
 
-* [ ] Create borrowing page.
-* [ ] Select member.
-* [ ] Select available book.
-* [ ] Set borrow date.
-* [ ] Set due date.
-* [ ] Generate unique borrow code.
-* [ ] Validate member status.
-* [ ] Validate book status.
-* [ ] Validate book availability.
-* [ ] Validate maximum 3 active borrowings.
-* [ ] Prevent borrowing the same active book.
-* [ ] Create borrowing record.
-* [ ] Update stock logic.
-* [ ] Add borrowing list.
-* [ ] Add borrowing detail.
-* [ ] Add search and filters.
-* [ ] Add pagination.
-* [ ] Use database transaction where required.
-* [ ] Add success/error alerts.
+* [x] Create borrowing page.
+* [x] Select member.
+* [x] Select available book.
+* [x] Set borrow date.
+* [x] Set due date.
+* [x] Generate unique borrow code.
+* [x] Validate member status.
+* [x] Validate book status.
+* [x] Validate book availability.
+* [x] Validate maximum 3 active borrowings.
+* [x] Prevent borrowing the same active book.
+* [x] Create borrowing record.
+* [x] Update stock logic.
+* [x] Add borrowing list.
+* [x] Add borrowing detail.
+* [x] Add search and filters.
+* [x] Add pagination.
+* [x] Use database transaction where required.
+* [x] Add success/error alerts.
 
 ## Phase 10 — Returning & Fine
 
