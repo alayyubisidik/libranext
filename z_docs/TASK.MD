@@ -109,19 +109,19 @@
 
 ## Phase 8 — Member Management
 
-* [ ] Create Member CRUD.
-* [ ] Generate unique member code.
-* [ ] Add member profile fields.
-* [ ] Add member profile photo.
-* [ ] Add active/inactive status.
-* [ ] Create member login credentials.
-* [ ] Prevent inactive members from borrowing.
-* [ ] Show member borrowing history.
-* [ ] Show member unpaid fines.
-* [ ] Add search and filters.
-* [ ] Add pagination.
-* [ ] Add validation.
-* [ ] Add success/error alerts.
+* [x] Create Member CRUD.
+* [x] Generate unique member code.
+* [x] Add member profile fields.
+* [x] Add member profile photo.
+* [x] Add active/inactive status.
+* [x] Create member login credentials.
+* [x] Prevent inactive members from borrowing.
+* [x] Show member borrowing history.
+* [x] Show member unpaid fines.
+* [x] Add search and filters.
+* [x] Add pagination.
+* [x] Add validation.
+* [x] Add success/error alerts.
 
 ## Phase 9 — Borrowing
 
