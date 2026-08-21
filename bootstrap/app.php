@@ -12,7 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'admin.setup' => \App\Http\Middleware\AdminSetupAllowed::class,
+            'role.admin'  => \App\Http\Middleware\EnsureAdminRole::class,
+            'role.member' => \App\Http\Middleware\EnsureMemberRole::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

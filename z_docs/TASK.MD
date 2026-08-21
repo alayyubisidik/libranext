@@ -48,18 +48,18 @@
 
 ## Phase 4 — Authentication & Authorization
 
-* [ ] Configure login.
-* [ ] Configure logout.
-* [ ] Configure password reset.
-* [ ] Remove public registration.
-* [ ] Create initial admin setup flow.
-* [ ] Prevent admin setup after an admin exists.
-* [ ] Create `admin` role.
-* [ ] Create `member` role.
+* [x] Configure login.
+* [x] Configure logout.
+* [x] Configure password reset.
+* [x] Remove public registration.
+* [x] Create initial admin setup flow.
+* [x] Prevent admin setup after an admin exists.
+* [x] Create `admin` role.
+* [x] Create `member` role.
 * [ ] Configure required permissions.
-* [ ] Protect admin routes.
-* [ ] Protect member routes.
-* [ ] Verify role-based access.
+* [x] Protect admin routes.
+* [x] Protect member routes.
+* [x] Verify role-based access.
 
 ## Phase 5 — Admin Layout & Dashboard
 
