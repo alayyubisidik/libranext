@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->string('search');
+        $search = $request->input('search');
 
         $categories = Category::query()
             ->when($search, fn ($query) => $query->where('name', 'like', "%{$search}%"))

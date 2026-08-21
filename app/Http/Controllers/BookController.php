@@ -11,9 +11,9 @@ class BookController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->string('search');
-        $categoryId = $request->string('category_id');
-        $status = $request->string('status');
+        $search = $request->input('search');
+        $categoryId = $request->input('category_id');
+        $status = $request->input('status');
 
         $books = Book::query()
             ->with(['category', 'media'])
