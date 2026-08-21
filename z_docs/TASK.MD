@@ -63,17 +63,17 @@
 
 ## Phase 5 — Admin Layout & Dashboard
 
-* [ ] Create authenticated application layout.
-* [ ] Create sidebar.
-* [ ] Create topbar.
-* [ ] Create navigation based on permissions.
-* [ ] Create dashboard page.
-* [ ] Add total books statistic.
-* [ ] Add total members statistic.
-* [ ] Add active borrowing statistic.
-* [ ] Add overdue borrowing statistic.
-* [ ] Add available stock statistic.
-* [ ] Add unpaid fine statistic.
+* [x] Create authenticated application layout.
+* [x] Create sidebar.
+* [x] Create topbar.
+* [x] Create navigation based on permissions.
+* [x] Create dashboard page.
+* [x] Add total books statistic.
+* [x] Add total members statistic.
+* [x] Add active borrowing statistic.
+* [x] Add overdue borrowing statistic.
+* [x] Add available stock statistic.
+* [x] Add unpaid fine statistic.
 
 ## Phase 6 — Category Management
 
