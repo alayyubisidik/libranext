@@ -112,7 +112,7 @@
                 <div>
                     <p class="text-sm font-medium text-gray-500">Unpaid Fines</p>
                     @php
-                        $unpaidFines = App\Models\Fine::where('user_id', $member->id)->where('status', 'unpaid')->sum('amount');
+                        $unpaidFines = App\Models\Fine::whereHas('borrowing', fn($q) => $q->where('user_id', $member->id))->where('status', 'unpaid')->sum('amount');
                     @endphp
                     <h3 class="text-xl font-bold text-gray-900">Rp{{ number_format($unpaidFines, 0, ',', '.') }}</h3>
                 </div>
