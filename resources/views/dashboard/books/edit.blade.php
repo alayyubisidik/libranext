@@ -12,7 +12,7 @@
 </div>
 
 <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-    <form action="{{ route('dashboard.books.update', $book) }}" method="POST" enctype="multipart/form-data" class="p-6 sm:p-8">
+    <form novalidate action="{{ route('dashboard.books.update', $book) }}" method="POST" enctype="multipart/form-data" class="p-6 sm:p-8">
         @csrf
         @method('PUT')
 

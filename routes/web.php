@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\SetupAdminController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MemberController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role.admin'])->prefix('dashboard')->name('dashboard.')->group(function () {
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('books', BookController::class)->except(['show']);
+        Route::resource('members', MemberController::class);
     });
 });
 

@@ -12,7 +12,7 @@
 </div>
 
 <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden max-w-3xl">
-    <form action="{{ route('dashboard.categories.update', $category) }}" method="POST" class="p-6 sm:p-8 space-y-6">
+    <form novalidate action="{{ route('dashboard.categories.update', $category) }}" method="POST" class="p-6 sm:p-8 space-y-6">
         @csrf
         @method('PUT')
 
