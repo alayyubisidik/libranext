@@ -77,14 +77,14 @@
 
 ## Phase 6 — Category Management
 
-* [ ] Create Category CRUD.
-* [ ] Add category search/filter if needed.
-* [ ] Generate category slug.
-* [ ] Add category status.
-* [ ] Prevent deleting categories that are still used by books.
-* [ ] Add success/error alerts.
-* [ ] Add validation.
-* [ ] Add pagination where needed.
+* [x] Create Category CRUD.
+* [x] Add category search/filter if needed.
+* [x] Generate category slug.
+* [x] Add category status.
+* [x] Prevent deleting categories that are still used by books.
+* [x] Add success/error alerts.
+* [x] Add validation.
+* [x] Add pagination where needed.
 
 ## Phase 7 — Book Management
 
