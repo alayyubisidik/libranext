@@ -19,31 +19,31 @@
 
 ## Phase 2 — Database
 
-* [ ] Create `users` table.
-* [ ] Create `password_reset_tokens` table.
-* [ ] Create `categories` table.
-* [ ] Create `books` table.
-* [ ] Create `borrowings` table.
-* [ ] Create `fines` table.
-* [ ] Create `payments` table.
-* [ ] Publish/create Spatie Permission tables.
-* [ ] Publish/create Spatie Media Library table.
-* [ ] Publish/create Spatie Activitylog table.
-* [ ] Add all foreign keys and indexes.
+* [x] Create `users` table.
+* [x] Create `password_reset_tokens` table.
+* [x] Create `categories` table.
+* [x] Create `books` table.
+* [x] Create `borrowings` table.
+* [x] Create `fines` table.
+* [x] Create `payments` table.
+* [x] Publish/create Spatie Permission tables.
+* [x] Publish/create Spatie Media Library table.
+* [x] Publish/create Spatie Activitylog table.
+* [x] Add all foreign keys and indexes.
 * [ ] Verify database structure against `schema.md`.
 
 ## Phase 3 — Models & Relationships
 
-* [ ] Create/configure User model.
-* [ ] Create Category model.
-* [ ] Create Book model.
-* [ ] Create Borrowing model.
-* [ ] Create Fine model.
-* [ ] Create Payment model.
-* [ ] Configure model relationships.
-* [ ] Configure casts and enums where appropriate.
-* [ ] Configure Media Library for User.
-* [ ] Configure Media Library for Book.
+* [x] Create/configure User model.
+* [x] Create Category model.
+* [x] Create Book model.
+* [x] Create Borrowing model.
+* [x] Create Fine model.
+* [x] Create Payment model.
+* [x] Configure model relationships.
+* [x] Configure casts and enums where appropriate.
+* [x] Configure Media Library for User.
+* [x] Configure Media Library for Book.
 * [ ] Configure Spatie roles and permissions.
 
 ## Phase 4 — Authentication & Authorization

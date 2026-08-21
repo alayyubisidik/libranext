@@ -36,10 +36,13 @@
             "Database\\Seeders\\": "database/seeders/"
         }
     },
-    "autoload-dev": {
+   "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
-        }
+        },
+        "files": [
+            "app/Helpers/global_helpers.php"
+        ]
     },
     "scripts": {
         "setup": [
