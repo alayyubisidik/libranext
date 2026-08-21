@@ -2,20 +2,20 @@
 
 ## Phase 1 — Project Setup
 
-* [ ] Create Laravel 13 project.
-* [ ] Configure `.env` for MySQL.
-* [ ] Configure application name and basic settings.
-* [ ] Install and configure Laravel Breeze.
-* [ ] Install and configure Spatie Permission.
-* [ ] Install and configure Spatie Media Library.
-* [ ] Install and configure Spatie Activitylog.
-* [ ] Install Eloquent Sluggable.
-* [ ] Install Midtrans PHP SDK.
-* [ ] Install Laravel DomPDF.
-* [ ] Install Laravel Excel.
-* [ ] Install PHP Flasher Notyf.
-* [ ] Configure Guzzle if required.
-* [ ] Configure Debugbar, Pint, Pail, PHPUnit, and other development tools.
+* [x] Create Laravel 13 project.
+* [x] Configure `.env` for MySQL.
+* [x] Configure application name and basic settings.
+* [x] Install and configure Laravel Breeze.
+* [x] Install and configure Spatie Permission.
+* [x] Install and configure Spatie Media Library.
+* [x] Install and configure Spatie Activitylog.
+* [x] Install Eloquent Sluggable.
+* [x] Install Midtrans PHP SDK.
+* [x] Install Laravel DomPDF.
+* [x] Install Laravel Excel.
+* [x] Install PHP Flasher Notyf.
+* [x] Configure Guzzle if required.
+* [x] Configure Debugbar, Pint, Pail, PHPUnit, and other development tools.
 
 ## Phase 2 — Database
 
