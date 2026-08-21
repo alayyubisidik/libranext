@@ -35,6 +35,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('books', BookController::class)->except(['show']);
         Route::resource('members', MemberController::class);
         Route::resource('borrowings', BorrowingController::class)->only(['index', 'create', 'store', 'show']);
+        Route::post('borrowings/{borrowing}/return', [BorrowingController::class, 'returnBook'])->name('borrowings.return');
     });
 });
 

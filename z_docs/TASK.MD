@@ -147,18 +147,18 @@
 
 ## Phase 10 — Returning & Fine
 
-* [ ] Create return flow.
-* [ ] Mark borrowing as returned.
-* [ ] Store `returned_at`.
-* [ ] Set `processed_by`.
-* [ ] Calculate overdue days.
-* [ ] Calculate fine using Rp500/day.
-* [ ] Create fine record when required.
-* [ ] Restore book availability.
-* [ ] Prevent returning an already returned borrowing.
-* [ ] Display fine information.
-* [ ] Use database transaction.
-* [ ] Add success/error alerts.
+* [x] Create return flow.
+* [x] Mark borrowing as returned.
+* [x] Store `returned_at`.
+* [x] Set `processed_by`.
+* [x] Calculate overdue days.
+* [x] Calculate fine using Rp500/day.
+* [x] Create fine record when required.
+* [x] Restore book availability.
+* [x] Prevent returning an already returned borrowing.
+* [x] Display fine information.
+* [x] Use database transaction.
+* [x] Add success/error alerts.
 
 ## Phase 11 — Fine Management
 

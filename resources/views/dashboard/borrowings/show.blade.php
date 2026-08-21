@@ -20,15 +20,23 @@
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
                 <h3 class="text-base font-semibold text-gray-900">Borrowing Information</h3>
-                @if($borrowing->status === 'borrowed')
-                    @if($borrowing->due_date->isPast())
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Overdue</span>
+                <div class="flex items-center gap-3">
+                    @if($borrowing->status === 'borrowed')
+                        @if($borrowing->due_date->isPast())
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Overdue</span>
+                        @else
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Borrowed</span>
+                        @endif
+                        <form action="{{ route('dashboard.borrowings.return', $borrowing) }}" method="POST" onsubmit="return confirm('Confirm return of this book?')" novalidate>
+                            @csrf
+                            <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-lg shadow-sm text-xs font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                Mark as Returned
+                            </button>
+                        </form>
                     @else
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Borrowed</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Returned</span>
                     @endif
-                @else
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Returned</span>
-                @endif
+                </div>
             </div>
             <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>

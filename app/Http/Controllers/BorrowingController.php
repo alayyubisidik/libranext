@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Borrowing;
+use App\Models\Fine;
 use App\Models\User;
 use App\Services\AlertService;
 use Illuminate\Http\Request;
@@ -116,6 +117,45 @@ class BorrowingController extends Controller
         $borrowing->loadMissing(['user', 'book.category', 'processedBy', 'fine.payments']);
 
         return view('dashboard.borrowings.show', compact('borrowing'));
+    }
+
+    public function returnBook(Borrowing $borrowing)
+    {
+        if ($borrowing->status === 'returned') {
+            AlertService::error('This borrowing has already been returned.');
+            return back();
+        }
+
+        DB::transaction(function () use ($borrowing) {
+            $returnedAt = now();
+            $overdueDays = 0;
+            $fine = null;
+
+            if ($returnedAt->gt($borrowing->due_date->endOfDay())) {
+                $overdueDays = (int) $borrowing->due_date->startOfDay()->diffInDays($returnedAt->startOfDay());
+            }
+
+            $borrowing->update([
+                'status'       => 'returned',
+                'returned_at'  => $returnedAt,
+                'processed_by' => user()->id,
+            ]);
+
+            if ($overdueDays > 0) {
+                $ratePerDay = 500;
+                Fine::create([
+                    'borrowing_id' => $borrowing->id,
+                    'rate_per_day' => $ratePerDay,
+                    'overdue_days' => $overdueDays,
+                    'amount'       => $overdueDays * $ratePerDay,
+                    'status'       => 'unpaid',
+                ]);
+            }
+        });
+
+        AlertService::updated('Book returned successfully.');
+
+        return to_route('dashboard.borrowings.show', $borrowing);
     }
 
     private function generateUniqueBorrowCode(): string
