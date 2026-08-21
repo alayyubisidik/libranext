@@ -162,14 +162,14 @@
 
 ## Phase 11 — Fine Management
 
-* [ ] Create unpaid fine list.
-* [ ] Create fine detail.
-* [ ] Display borrowing information.
-* [ ] Display overdue days.
-* [ ] Display fine amount.
-* [ ] Display payment status.
-* [ ] Support waived fines if required.
-* [ ] Prevent payment of already paid fines.
+* [x] Create unpaid fine list.
+* [x] Create fine detail.
+* [x] Display borrowing information.
+* [x] Display overdue days.
+* [x] Display fine amount.
+* [x] Display payment status.
+* [x] Support waived fines if required.
+* [x] Prevent payment of already paid fines.
 
 ## Phase 12 — Cash Payment
 

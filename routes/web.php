@@ -5,6 +5,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\BorrowingController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FineController;
 use App\Http\Controllers\MemberController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +37,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('members', MemberController::class);
         Route::resource('borrowings', BorrowingController::class)->only(['index', 'create', 'store', 'show']);
         Route::post('borrowings/{borrowing}/return', [BorrowingController::class, 'returnBook'])->name('borrowings.return');
+        Route::resource('fines', FineController::class)->only(['index', 'show']);
+        Route::post('fines/{fine}/waive', [FineController::class, 'waive'])->name('fines.waive');
     });
 });
 
