@@ -88,24 +88,24 @@
 
 ## Phase 7 — Book Management
 
-* [ ] Create Book CRUD.
-* [ ] Add category selection.
-* [ ] Add ISBN.
-* [ ] Add author.
-* [ ] Add publisher.
-* [ ] Add publication year.
-* [ ] Add stock.
-* [ ] Add description.
-* [ ] Add book status.
-* [ ] Add book cover upload.
-* [ ] Add book cover replacement.
-* [ ] Add book cover deletion.
-* [ ] Display available stock.
-* [ ] Prevent deleting books with active borrowings.
-* [ ] Add search and filters.
-* [ ] Add pagination.
-* [ ] Add validation.
-* [ ] Add success/error alerts.
+* [x] Create Book CRUD.
+* [x] Add category selection.
+* [x] Add ISBN.
+* [x] Add author.
+* [x] Add publisher.
+* [x] Add publication year.
+* [x] Add stock.
+* [x] Add description.
+* [x] Add book status.
+* [x] Add book cover upload.
+* [x] Add book cover replacement.
+* [x] Add book cover deletion.
+* [x] Display available stock.
+* [x] Prevent deleting books with active borrowings.
+* [x] Add search and filters.
+* [x] Add pagination.
+* [x] Add validation.
+* [x] Add success/error alerts.
 
 ## Phase 8 — Member Management
 
