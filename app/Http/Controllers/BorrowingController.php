@@ -13,6 +13,127 @@ use Illuminate\Support\Str;
 
 class BorrowingController extends Controller
 {
+    public function memberCreate(Request $request)
+    {
+        $member = user();
+
+        if ($member->member_status !== 'active') {
+            AlertService::error('Your account is inactive and cannot borrow books.');
+            return to_route('dashboard.index');
+        }
+
+        $activeBorrowingsCount = Borrowing::where('user_id', $member->id)
+            ->whereIn('status', ['pending', 'borrowed'])
+            ->count();
+
+        $alreadyBorrowedBookIds = Borrowing::where('user_id', $member->id)
+            ->whereIn('status', ['pending', 'borrowed'])
+            ->pluck('book_id');
+
+        $search = $request->input('search');
+
+        $books = Book::with('category')
+            ->where('status', 'active')
+            ->when($search, function($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%");
+            })
+            ->orderBy('title')
+            ->paginate(6)
+            ->through(function($book) use ($alreadyBorrowedBookIds) {
+                $book->can_borrow = $book->available_stock > 0 && !$alreadyBorrowedBookIds->contains($book->id);
+                $book->already_borrowed = $alreadyBorrowedBookIds->contains($book->id);
+                return $book;
+            });
+            
+        $books->appends($request->only('search'));
+
+        $memberBorrowings = Borrowing::with('book.category')
+            ->where('user_id', $member->id)
+            ->whereIn('status', ['pending', 'borrowed'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('dashboard.member.borrow', compact('member', 'books', 'activeBorrowingsCount', 'memberBorrowings', 'search'));
+    }
+
+    public function memberStore(Request $request)
+    {
+        $member = user();
+
+        $validated = $request->validate([
+            'book_id'  => ['required', 'exists:books,id'],
+        ]);
+
+        $book = Book::findOrFail($validated['book_id']);
+
+        if ($member->member_status !== 'active') {
+            AlertService::error('Your account is inactive and cannot borrow books.');
+            return back()->withInput();
+        }
+
+        if ($book->status !== 'active') {
+            AlertService::error('Selected book is not available for borrowing.');
+            return back()->withInput();
+        }
+
+        if ($book->available_stock <= 0) {
+            AlertService::error('Selected book is out of stock.');
+            return back()->withInput();
+        }
+
+        $activeBorrowingsCount = Borrowing::where('user_id', $member->id)
+            ->whereIn('status', ['pending', 'borrowed'])
+            ->count();
+
+        if ($activeBorrowingsCount >= 3) {
+            AlertService::error('You have reached the maximum of 3 active borrowings.');
+            return back()->withInput();
+        }
+
+        $alreadyBorrowingThisBook = Borrowing::where('user_id', $member->id)
+            ->where('book_id', $book->id)
+            ->whereIn('status', ['pending', 'borrowed'])
+            ->exists();
+
+        if ($alreadyBorrowingThisBook) {
+            AlertService::error('You are already borrowing this book.');
+            return back()->withInput();
+        }
+
+        DB::transaction(function () use ($member, $book) {
+            Borrowing::create([
+                'user_id'     => $member->id,
+                'book_id'     => $book->id,
+                'borrow_code' => $this->generateUniqueBorrowCode(),
+                'borrow_date' => today(),
+                'due_date'    => today()->addDays(7),
+                'status'      => 'pending',
+            ]);
+        });
+
+        AlertService::created('Book requested successfully. Please confirm with the admin.');
+
+        return to_route('dashboard.member.borrow.create');
+    }
+
+    public function memberDestroy(Borrowing $borrowing)
+    {
+        if ($borrowing->user_id !== user()->id) {
+            abort(403);
+        }
+
+        if ($borrowing->status !== 'pending') {
+            AlertService::error('You can only cancel pending requests.');
+            return back();
+        }
+
+        $borrowing->delete();
+
+        AlertService::success('Borrow request cancelled.');
+
+        return back();
+    }
+
     public function index(Request $request)
     {
         $search = $request->input('search');

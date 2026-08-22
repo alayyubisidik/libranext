@@ -21,6 +21,11 @@ class SetupAdminController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
+            'setup_key' => ['required', 'string', function ($attribute, $value, $fail) {
+                if ($value !== env('ADMIN_SETUP_KEY')) {
+                    $fail('The setup key is invalid.');
+                }
+            }],
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],

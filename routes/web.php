@@ -35,6 +35,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('dashboard/fines/{fine}/pay-midtrans', [FineController::class, 'payMidtrans'])->name('dashboard.fines.pay-midtrans');
     Route::post('dashboard/fines/midtrans-callback', [FineController::class, 'midtransCallback'])->name('dashboard.fines.midtrans-callback');
 
+    // Member accessible routes for borrowing
+    Route::get('dashboard/member/borrow', [BorrowingController::class, 'memberCreate'])->name('dashboard.member.borrow.create');
+    Route::post('dashboard/member/borrow', [BorrowingController::class, 'memberStore'])->name('dashboard.member.borrow.store');
+    Route::delete('dashboard/member/borrow/{borrowing}', [BorrowingController::class, 'memberDestroy'])->name('dashboard.member.borrow.destroy');
+
     Route::middleware(['role.admin'])->prefix('dashboard')->name('dashboard.')->group(function () {
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('books', BookController::class)->except(['show']);

@@ -33,6 +33,12 @@ class DashboardController extends Controller
             'unpaid_fines'      => Fine::whereHas('borrowing', function($query) use ($user) {
                                         $query->where('user_id', $user->id);
                                      })->where('status', 'unpaid')->sum('amount'),
+            'total_fines'       => Fine::whereHas('borrowing', function($query) use ($user) {
+                                        $query->where('user_id', $user->id);
+                                     })->sum('amount'),
+            'total_fines_paid'  => Fine::whereHas('borrowing', function($query) use ($user) {
+                                        $query->where('user_id', $user->id);
+                                     })->where('status', 'paid')->sum('amount'),
         ];
 
         $activeBorrowings = Borrowing::with('book')
@@ -54,6 +60,13 @@ class DashboardController extends Controller
             ->where('status', 'unpaid')
             ->get();
 
-        return view('dashboard.index', compact('memberStats', 'activeBorrowings', 'borrowingHistory', 'unpaidFines', 'user'));
+        $fineHistory = Fine::with(['borrowing.book', 'payments'])
+            ->whereHas('borrowing', function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->latest()
+            ->get();
+
+        return view('dashboard.index', compact('memberStats', 'activeBorrowings', 'borrowingHistory', 'unpaidFines', 'fineHistory', 'user'));
     }
 }
