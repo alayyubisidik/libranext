@@ -16,17 +16,17 @@ class FineController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $status = $request->input('status', 'unpaid'); // Default show unpaid
+        $status = $request->input('status'); // Default show all
 
         $fines = Fine::with(['borrowing.user', 'borrowing.book'])
             ->when($search, function ($query) use ($search) {
                 $query->whereHas('borrowing', function ($q) use ($search) {
                     $q->where('borrow_code', 'like', "%{$search}%")
-                        ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%"))
-                        ->orWhereHas('book', fn($b) => $b->where('title', 'like', "%{$search}%"));
+                      ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%"))
+                      ->orWhereHas('book', fn ($b) => $b->where('title', 'like', "%{$search}%"));
                 });
             })
-            ->when($status, fn($query) => $query->where('status', $status))
+            ->when($status, fn ($query) => $query->where('status', $status))
             ->latest()
             ->paginate(10)
             ->withQueryString();
@@ -91,8 +91,51 @@ class FineController extends Controller
         return back();
     }
 
+    public function midtransCallback(Request $request)
+    {
+        $orderId = $request->input('order_id');
+        $transactionStatus = $request->input('transaction_status');
+        $fraudStatus = $request->input('fraud_status');
+
+        $payment = Payment::where('order_id', $orderId)->first();
+
+        if (!$payment) {
+            return response()->json(['message' => 'Payment not found'], 404);
+        }
+
+        DB::transaction(function () use ($transactionStatus, $fraudStatus, $payment) {
+            if ($transactionStatus === 'capture') {
+                if ($fraudStatus === 'accept') {
+                    $this->markPaymentAsPaid($payment);
+                }
+            } elseif ($transactionStatus === 'settlement') {
+                $this->markPaymentAsPaid($payment);
+            }
+        });
+
+        return response()->json(['message' => 'OK']);
+    }
+
+    private function markPaymentAsPaid(Payment $payment)
+    {
+        $payment->update([
+            'status' => 'paid',
+            'paid_at' => now(),
+        ]);
+
+        $fine = $payment->fine;
+        if ($fine && $fine->status !== 'paid') {
+            $fine->update(['status' => 'paid']);
+        }
+    }
+
     public function payMidtrans(Fine $fine)
     {
+        // Check if member is paying their own fine or if it's admin
+        if (!user()->hasRole('admin') && $fine->borrowing->user_id !== user()->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
         if ($fine->status !== 'unpaid') {
             AlertService::error('Fine is already paid or waived.');
             return back();

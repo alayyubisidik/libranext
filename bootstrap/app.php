@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->validateCsrfTokens(except: [
+            'api/webhooks/midtrans',
+        ]);
         $middleware->alias([
             'admin.setup' => \App\Http\Middleware\AdminSetupAllowed::class,
             'role.admin'  => \App\Http\Middleware\EnsureAdminRole::class,

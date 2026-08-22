@@ -157,7 +157,7 @@
                         <div class="flex items-center gap-4">
                             <p class="text-base font-bold text-red-600">Rp{{ number_format($fine->amount, 0, ',', '.') }}</p>
                             <!-- Member can pay online via Midtrans if configured -->
-                            <form action="{{ route('dashboard.fines.pay-midtrans', $fine) }}" method="POST">
+                            <form action="{{ route('dashboard.fines.pay-midtrans', $fine) }}" method="POST" novalidate>
                                 @csrf
                                 <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700">
                                     Pay Online

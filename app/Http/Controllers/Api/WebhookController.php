@@ -19,6 +19,8 @@ class WebhookController extends Controller
         try {
             $notification = new Notification();
         } catch (\Exception $e) {
+            // Log the error for debugging
+            \Illuminate\Support\Facades\Log::error('Midtrans Webhook Error: ' . $e->getMessage());
             return response()->json(['message' => 'Failed processing notification'], 400);
         }
 
