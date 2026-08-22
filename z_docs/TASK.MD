@@ -173,17 +173,17 @@
 
 ## Phase 12 — Cash Payment
 
-* [ ] Create cash payment flow.
-* [ ] Allow Admin to record cash payment.
-* [ ] Create payment record with `method = cash`.
-* [ ] Set payment status to pending before confirmation.
-* [ ] Allow Admin to confirm cash payment.
-* [ ] Set payment status to paid after confirmation.
-* [ ] Set `paid_at`.
-* [ ] Update related fine to paid.
-* [ ] Prevent duplicate payment.
-* [ ] Add payment history.
-* [ ] Add success/error alerts.
+* [x] Create cash payment flow.
+* [x] Allow Admin to record cash payment.
+* [x] Create payment record with `method = cash`.
+* [x] Set payment status to pending before confirmation.
+* [x] Allow Admin to confirm cash payment.
+* [x] Set payment status to paid after confirmation.
+* [x] Set `paid_at`.
+* [x] Update related fine to paid.
+* [x] Prevent duplicate payment.
+* [x] Add payment history.
+* [x] Add success/error alerts.
 
 ## Phase 13 — Midtrans Payment
 

@@ -39,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('borrowings/{borrowing}/return', [BorrowingController::class, 'returnBook'])->name('borrowings.return');
         Route::resource('fines', FineController::class)->only(['index', 'show']);
         Route::post('fines/{fine}/waive', [FineController::class, 'waive'])->name('fines.waive');
+        Route::post('fines/{fine}/pay-cash', [FineController::class, 'payCash'])->name('fines.pay-cash');
     });
 });
 
