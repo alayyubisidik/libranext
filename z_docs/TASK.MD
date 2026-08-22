@@ -209,14 +209,14 @@
 
 ## Phase 14 — Member Dashboard
 
-* [ ] Create member dashboard.
-* [ ] Display member information.
-* [ ] Display active borrowings.
-* [ ] Display borrowing history.
-* [ ] Display unpaid fines.
-* [ ] Display payment status.
-* [ ] Add online fine payment.
-* [ ] Restrict member access to admin features.
+* [x] Create member dashboard.
+* [x] Display member information.
+* [x] Display active borrowings.
+* [x] Display borrowing history.
+* [x] Display unpaid fines.
+* [x] Display payment status.
+* [x] Add online fine payment.
+* [x] Restrict member access to admin features.
 
 ## Phase 15 — Reports
 

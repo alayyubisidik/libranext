@@ -25,12 +25,35 @@ class DashboardController extends Controller
             return view('dashboard.index', compact('stats'));
         }
 
-        // Member dashboard logic (if needed later)
+        // Member dashboard logic
+        $user = user();
+        
         $memberStats = [
-            'active_borrowings' => Borrowing::where('user_id', user()->id)->where('status', 'borrowed')->count(),
-            'unpaid_fines'      => Fine::where('user_id', user()->id)->where('status', 'unpaid')->sum('amount'),
+            'active_borrowings' => Borrowing::where('user_id', $user->id)->where('status', 'borrowed')->count(),
+            'unpaid_fines'      => Fine::whereHas('borrowing', function($query) use ($user) {
+                                        $query->where('user_id', $user->id);
+                                     })->where('status', 'unpaid')->sum('amount'),
         ];
 
-        return view('dashboard.index', compact('memberStats'));
+        $activeBorrowings = Borrowing::with('book')
+            ->where('user_id', $user->id)
+            ->where('status', 'borrowed')
+            ->orderBy('due_date', 'asc')
+            ->get();
+
+        $borrowingHistory = Borrowing::with('book')
+            ->where('user_id', $user->id)
+            ->orderBy('borrow_date', 'desc')
+            ->take(5)
+            ->get();
+
+        $unpaidFines = Fine::with('borrowing.book')
+            ->whereHas('borrowing', function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->where('status', 'unpaid')
+            ->get();
+
+        return view('dashboard.index', compact('memberStats', 'activeBorrowings', 'borrowingHistory', 'unpaidFines', 'user'));
     }
 }
