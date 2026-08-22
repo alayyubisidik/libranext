@@ -85,6 +85,11 @@
                         @else
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Returned</span>
                         @endif
+                        @if($borrowing->fine)
+                            <div class="text-xs text-red-600 mt-1 font-semibold">
+                                Denda: {{ $borrowing->fine->overdue_days }} Hari (Rp {{ number_format($borrowing->fine->amount, 0, ',', '.') }})
+                            </div>
+                        @endif
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <a href="{{ route('dashboard.borrowings.show', $borrowing) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
