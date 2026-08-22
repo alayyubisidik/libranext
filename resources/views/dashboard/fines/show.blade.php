@@ -67,12 +67,20 @@
             <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
                 <h3 class="text-base font-semibold text-gray-900">Payments</h3>
                 @if($fine->status === 'unpaid')
-                <form action="{{ route('dashboard.fines.pay-cash', $fine) }}" method="POST" onsubmit="return confirm('Confirm cash payment of Rp{{ number_format($fine->amount, 0, ',', '.') }}?')" novalidate>
-                    @csrf
-                    <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Record Cash Payment
-                    </button>
-                </form>
+                <div class="flex gap-2">
+                    <form action="{{ route('dashboard.fines.pay-cash', $fine) }}" method="POST" onsubmit="return confirm('Confirm cash payment of Rp{{ number_format($fine->amount, 0, ',', '.') }}?')" novalidate>
+                        @csrf
+                        <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Record Cash
+                        </button>
+                    </form>
+                    <form action="{{ route('dashboard.fines.pay-midtrans', $fine) }}" method="POST" novalidate>
+                        @csrf
+                        <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Pay with Midtrans
+                        </button>
+                    </form>
+                </div>
                 @endif
             </div>
             <div class="overflow-x-auto">

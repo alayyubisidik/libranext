@@ -6,6 +6,11 @@ use App\Models\Fine;
 use App\Services\AlertService;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\DB;
+use App\Models\Payment;
+use Midtrans\Config;
+use Midtrans\Snap;
+
 class FineController extends Controller
 {
     public function index(Request $request)
@@ -65,8 +70,8 @@ class FineController extends Controller
 
         $fine->loadMissing('borrowing.user');
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($fine) {
-            $payment = \App\Models\Payment::create([
+        DB::transaction(function () use ($fine) {
+            Payment::create([
                 'fine_id' => $fine->id,
                 'user_id' => $fine->borrowing->user_id,
                 'order_id' => 'CASH-' . time() . '-' . $fine->id,
@@ -84,5 +89,68 @@ class FineController extends Controller
         AlertService::success('Cash payment recorded successfully.');
 
         return back();
+    }
+
+    public function payMidtrans(Fine $fine)
+    {
+        if ($fine->status !== 'unpaid') {
+            AlertService::error('Fine is already paid or waived.');
+            return back();
+        }
+
+        if ($fine->amount <= 0) {
+            AlertService::error('Fine amount is zero.');
+            return back();
+        }
+
+        $fine->loadMissing('borrowing.user');
+
+        // Configure Midtrans
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = config('midtrans.is_sanitized');
+        Config::$is3ds = config('midtrans.is_3ds');
+
+        $orderId = 'MID-' . time() . '-' . $fine->id;
+
+        $params = [
+            'transaction_details' => [
+                'order_id' => $orderId,
+                'gross_amount' => (int) $fine->amount,
+            ],
+            'customer_details' => [
+                'first_name' => $fine->borrowing->user->name,
+                'email' => $fine->borrowing->user->email,
+            ],
+            'item_details' => [
+                [
+                    'id' => $fine->id,
+                    'price' => (int) $fine->amount,
+                    'quantity' => 1,
+                    'name' => 'Fine for overdue book: ' . $fine->borrowing->book->title,
+                ]
+            ]
+        ];
+
+        try {
+            $snapToken = Snap::getSnapToken($params);
+
+            DB::transaction(function () use ($fine, $orderId) {
+                Payment::create([
+                    'fine_id' => $fine->id,
+                    'user_id' => $fine->borrowing->user_id,
+                    'order_id' => $orderId,
+                    'method' => 'midtrans',
+                    'amount' => $fine->amount,
+                    'status' => 'pending',
+                ]);
+            });
+
+            return view('dashboard.fines.midtrans', compact('fine', 'snapToken'));
+
+        } catch (\Exception $e) {
+            AlertService::error('Failed to initiate Midtrans payment: ' . $e->getMessage());
+            return back();
+        }
     }
 }

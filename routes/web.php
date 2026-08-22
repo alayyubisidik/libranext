@@ -40,7 +40,10 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('fines', FineController::class)->only(['index', 'show']);
         Route::post('fines/{fine}/waive', [FineController::class, 'waive'])->name('fines.waive');
         Route::post('fines/{fine}/pay-cash', [FineController::class, 'payCash'])->name('fines.pay-cash');
+        Route::post('fines/{fine}/pay-midtrans', [FineController::class, 'payMidtrans'])->name('fines.pay-midtrans');
     });
 });
 
 require __DIR__.'/auth.php';
+
+Route::post('api/webhooks/midtrans', [\App\Http\Controllers\Api\WebhookController::class, 'midtrans'])->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class)->name('api.webhooks.midtrans');

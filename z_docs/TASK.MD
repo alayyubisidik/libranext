@@ -187,25 +187,25 @@
 
 ## Phase 13 — Midtrans Payment
 
-* [ ] Configure Midtrans credentials.
-* [ ] Configure sandbox/production environment.
-* [ ] Create Midtrans payment request.
-* [ ] Generate unique payment `order_id`.
-* [ ] Create pending payment record.
-* [ ] Display Midtrans payment interface.
-* [ ] Handle Midtrans payment result.
-* [ ] Create notification/webhook endpoint.
-* [ ] Verify Midtrans notification.
-* [ ] Update payment status.
-* [ ] Store transaction ID.
-* [ ] Store payment type.
-* [ ] Store relevant Midtrans response.
-* [ ] Update fine to paid only after successful payment confirmation.
-* [ ] Handle failed payment.
-* [ ] Handle expired payment.
-* [ ] Handle cancelled payment.
-* [ ] Prevent duplicate payment.
-* [ ] Test complete payment flow in sandbox.
+* [x] Configure Midtrans credentials.
+* [x] Configure sandbox/production environment.
+* [x] Create Midtrans payment request.
+* [x] Generate unique payment `order_id`.
+* [x] Create pending payment record.
+* [x] Display Midtrans payment interface.
+* [x] Handle Midtrans payment result.
+* [x] Create notification/webhook endpoint.
+* [x] Verify Midtrans notification.
+* [x] Update payment status.
+* [x] Store transaction ID.
+* [x] Store payment type.
+* [x] Store relevant Midtrans response.
+* [x] Update fine to paid only after successful payment confirmation.
+* [x] Handle failed payment.
+* [x] Handle expired payment.
+* [x] Handle cancelled payment.
+* [x] Prevent duplicate payment.
+* [x] Test complete payment flow in sandbox.
 
 ## Phase 14 — Member Dashboard
 
