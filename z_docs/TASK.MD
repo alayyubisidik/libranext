@@ -239,16 +239,60 @@
 * [x] Create activity log list for Admin.
 * [x] Add filters if needed.
 
-## Phase 17 — Validation & Error Handling
+## Phase 17 — Attendance Feature
 
-* [ ] Review all form validation.
-* [ ] Review authorization.
-* [ ] Review destructive action confirmations.
-* [ ] Review empty states.
-* [ ] Review error states.
-* [ ] Review payment failure handling.
-* [ ] Review database transaction boundaries.
-* [ ] Review duplicate action prevention.
+Fitur absen kunjungan member ke perpustakaan. Member **tidak perlu login** untuk melakukan absen — akses melalui tombol khusus di halaman login.
+
+### Database & Model
+
+* [ ] Create `attendances` table migration (`user_id`, `check_in_at`, timestamps only).
+* [ ] Add foreign key `user_id` → `users.id`.
+* [ ] Create `Attendance` model.
+* [ ] Add `attendances()` relationship (hasMany) on `User` model.
+* [ ] Add `belongsTo(User)` relationship on `Attendance` model.
+
+### Entry Point (Login Page)
+
+* [ ] Add "Absen" button on the login page.
+* [ ] Button links to a public attendance route (guest-accessible, no auth required).
+
+### Attendance Search Page
+
+* [ ] Create public route + controller for the attendance page (outside `auth` middleware).
+* [ ] Create search form input (name or member code).
+* [ ] Implement live/AJAX search matching `name` LIKE or `member_code` LIKE.
+* [ ] Restrict search to users with the `member` role only (exclude admin accounts).
+* [ ] Restrict search results to `member_status = active` only.
+* [ ] Display list of matching members (name, member code, photo thumbnail).
+* [ ] Handle "no matching member found" empty state.
+* [ ] Limit number of search results displayed (e.g. max 10).
+
+### Member Detail & Confirmation
+
+* [ ] On clicking a result, show member detail (photo, name, member code, status).
+* [ ] Add "Absen" confirmation button on the detail view.
+* [ ] Validate member is still active before creating attendance record.
+* [ ] Create `attendance` record with `user_id` and `check_in_at = now()` on confirmation.
+* [ ] Show success confirmation screen/message after absen recorded.
+* [ ] Provide a way to go back to search if the wrong member was selected.
+
+### Security & Abuse Prevention
+
+* [ ] Add rate limiting/throttle on the public attendance route.
+* [ ] Ensure no sensitive data (email, phone, address, password) is exposed on the public page.
+* [ ] Add basic validation to prevent empty/invalid search submissions.
+
+### Admin Side
+
+* [ ] Create attendance list page for Admin (with date filter).
+* [ ] Add search/filter by member on the attendance list.
+* [ ] Add pagination to the attendance list.
+* [ ] Log attendance check-in to `activity_log`.
+
+### UI
+
+* [ ] Design attendance page following the light and blue theme.
+* [ ] Ensure attendance page is responsive (usable on tablet/kiosk device).
 
 ## Phase 18 — Testing
 
@@ -268,6 +312,9 @@
 * [ ] Test failed/expired payments.
 * [ ] Test reports.
 * [ ] Test critical authorization rules.
+* [ ] Test attendance search (name and member code).
+* [ ] Test attendance check-in creation.
+* [ ] Test attendance page is not accessible to view sensitive member data.
 
 ## Phase 19 — Final Review
 

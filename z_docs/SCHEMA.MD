@@ -13,6 +13,7 @@ books
 borrowings
 fines
 payments
+attendances
 permissions
 roles
 model_has_permissions
@@ -26,7 +27,6 @@ password_reset_tokens
 ## 2. Users
 
 Admin dan Member menggunakan satu tabel `users`.
-
 Role ditentukan oleh Spatie Permission, bukan kolom `role`.
 
 | Column            | Type         | Notes                     |
@@ -104,7 +104,6 @@ One row represents one book borrowed by one member.
 | updated_at   | TIMESTAMP   |                           |
 
 `user_id` = member who borrows.
-
 `processed_by` = admin who processes the return.
 
 ## 6. Fines
@@ -133,24 +132,23 @@ rate_per_day = 500
 ## 7. Payments
 
 A payment belongs to a fine.
-
 Payment supports both cash and Midtrans.
 
 | Column         | Type          | Notes                                 |
-| -------------- | ------------- | ------------------------------------- |
-| id             | BIGINT        | PK                                    |
-| fine_id        | BIGINT        | FK → fines.id                         |
-| user_id        | BIGINT        | FK → users.id                         |
-| order_id       | VARCHAR(100)  | Unique                                |
-| transaction_id | VARCHAR(100)  | Nullable                              |
-| method         | ENUM          | cash/midtrans                         |
-| payment_type   | VARCHAR(50)   | Nullable                              |
-| amount         | DECIMAL(10,2) | Required                              |
-| status         | ENUM          | pending/paid/failed/expired/cancelled |
-| paid_at        | DATETIME      | Nullable                              |
-| raw_response   | JSON          | Nullable                              |
-| created_at     | TIMESTAMP     |                                       |
-| updated_at     | TIMESTAMP     |                                       |
+| -------------- | ------------- | -------------------------------------- |
+| id             | BIGINT        | PK                                     |
+| fine_id        | BIGINT        | FK → fines.id                          |
+| user_id        | BIGINT        | FK → users.id                          |
+| order_id       | VARCHAR(100)  | Unique                                 |
+| transaction_id | VARCHAR(100)  | Nullable                               |
+| method         | ENUM          | cash/midtrans                          |
+| payment_type   | VARCHAR(50)   | Nullable                               |
+| amount         | DECIMAL(10,2) | Required                               |
+| status         | ENUM          | pending/paid/failed/expired/cancelled  |
+| paid_at        | DATETIME      | Nullable                               |
+| raw_response   | JSON          | Nullable                               |
+| created_at     | TIMESTAMP     |                                         |
+| updated_at     | TIMESTAMP     |                                         |
 
 ### Cash Payment
 
@@ -186,7 +184,20 @@ A successful payment changes the related fine:
 fines.status = paid
 ```
 
-## 8. Spatie Permission
+## 8. Attendances
+
+Digunakan untuk fitur absen kunjungan member ke perpustakaan.
+Satu baris merepresentasikan satu kali absen (check-in) member.
+
+| Column      | Type      | Notes                   |
+| ----------- | --------- | ------------------------ |
+| id          | BIGINT    | PK                        |
+| user_id     | BIGINT    | FK → users.id (member)    |
+| check_in_at | DATETIME  | Required                  |
+| created_at  | TIMESTAMP |                            |
+| updated_at  | TIMESTAMP |                            |
+
+## 9. Spatie Permission
 
 Use the default tables from Spatie Laravel Permission:
 
@@ -207,7 +218,7 @@ member
 
 User role is determined through `model_has_roles`.
 
-## 9. Media Library
+## 10. Media Library
 
 Use Spatie Media Library's `media` table.
 
@@ -220,7 +231,7 @@ Member profile photo
 
 No image path column is required in `books` or `users`.
 
-## 10. Activity Log
+## 11. Activity Log
 
 Use Spatie Activitylog's `activity_log` table.
 
@@ -236,9 +247,10 @@ Borrow book
 Return book
 Confirm cash payment
 Payment status update
+Member attendance check-in
 ```
 
-## 11. Password Reset
+## 12. Password Reset
 
 Use Laravel Breeze's:
 
@@ -246,12 +258,13 @@ Use Laravel Breeze's:
 password_reset_tokens
 ```
 
-## 12. Relationships
+## 13. Relationships
 
 ```text
 User
  ├── hasMany Borrowings
  ├── hasMany Payments
+ ├── hasMany Attendances
  └── belongsToMany Roles
 
 Category
@@ -274,9 +287,12 @@ Fine
 Payment
  ├── belongsTo Fine
  └── belongsTo User
+
+Attendance
+ └── belongsTo User
 ```
 
-## 13. Important Rules
+## 14. Important Rules
 
 * Admin and Member share the `users` table.
 * Role is managed by Spatie Permission.
@@ -290,3 +306,4 @@ Payment
 * Book cover and profile photo use Media Library.
 * Available stock is calculated, not stored separately.
 * Fine rate defaults to Rp500/day.
+* One attendance row represents one check-in visit by a member.
