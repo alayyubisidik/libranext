@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\SetupAdminController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BorrowingController;
@@ -63,9 +65,20 @@ Route::middleware(['auth'])->group(function () {
 
         // Activity Logs
         Route::get('activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-logs.index');
+
+        // Attendances
+        Route::get('attendances', [AdminAttendanceController::class, 'index'])->name('attendances.index');
     });
 });
 
 require __DIR__.'/auth.php';
 
 Route::post('api/webhooks/midtrans', [\App\Http\Controllers\Api\WebhookController::class, 'midtrans'])->name('api.webhooks.midtrans');
+
+Route::middleware(['throttle:30,1'])->prefix('attendance')->name('attendance.')->group(function () {
+    Route::get('/', [AttendanceController::class, 'index'])->name('index');
+    Route::get('/search', [AttendanceController::class, 'search'])->name('search');
+    Route::get('/member/{user}', [AttendanceController::class, 'show'])->name('show');
+    Route::post('/member/{user}', [AttendanceController::class, 'store'])->name('store');
+    Route::get('/member/{user}/success', [AttendanceController::class, 'success'])->name('success');
+});
