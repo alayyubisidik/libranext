@@ -45,10 +45,20 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('books', BookController::class)->except(['show']);
         Route::resource('members', MemberController::class);
         Route::resource('borrowings', BorrowingController::class)->only(['index', 'create', 'store', 'show']);
+        Route::post('borrowings/{borrowing}/confirm', [BorrowingController::class, 'confirmBook'])->name('borrowings.confirm');
         Route::post('borrowings/{borrowing}/return', [BorrowingController::class, 'returnBook'])->name('borrowings.return');
         Route::resource('fines', FineController::class)->only(['index', 'show']);
         Route::post('fines/{fine}/waive', [FineController::class, 'waive'])->name('fines.waive');
         Route::post('fines/{fine}/pay-cash', [FineController::class, 'payCash'])->name('fines.pay-cash');
+        
+        // Reports
+        Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/borrowings', [\App\Http\Controllers\Admin\ReportController::class, 'borrowings'])->name('reports.borrowings');
+        Route::get('reports/borrowings/export', [\App\Http\Controllers\Admin\ReportController::class, 'exportBorrowings'])->name('reports.borrowings.export');
+        Route::get('reports/fines', [\App\Http\Controllers\Admin\ReportController::class, 'fines'])->name('reports.fines');
+        Route::get('reports/fines/export', [\App\Http\Controllers\Admin\ReportController::class, 'exportFines'])->name('reports.fines.export');
+        Route::get('reports/payments', [\App\Http\Controllers\Admin\ReportController::class, 'payments'])->name('reports.payments');
+        Route::get('reports/payments/export', [\App\Http\Controllers\Admin\ReportController::class, 'exportPayments'])->name('reports.payments.export');
     });
 });
 

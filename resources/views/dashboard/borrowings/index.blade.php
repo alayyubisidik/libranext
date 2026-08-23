@@ -17,6 +17,7 @@
 
             <select name="status" class="block w-full sm:w-36 py-2 px-3 border border-gray-300 bg-white rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <option value="">All Status</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                 <option value="borrowed" {{ request('status') == 'borrowed' ? 'selected' : '' }}>Borrowed</option>
                 <option value="returned" {{ request('status') == 'returned' ? 'selected' : '' }}>Returned</option>
             </select>
@@ -82,6 +83,8 @@
                             @else
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Borrowed</span>
                             @endif
+                        @elseif($borrowing->status === 'pending')
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pending</span>
                         @else
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Returned</span>
                         @endif
@@ -91,8 +94,14 @@
                             </div>
                         @endif
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="{{ route('dashboard.borrowings.show', $borrowing) }}" class="text-blue-600 hover:text-blue-900">Detail</a>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex gap-2 justify-end">
+                        @if($borrowing->status === 'pending')
+                            <form action="{{ route('dashboard.borrowings.confirm', $borrowing) }}" method="POST" onsubmit="return confirm('Are you sure you want to confirm this borrowing request?')">
+                                @csrf
+                                <button type="submit" class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-2 py-1 rounded">Confirm</button>
+                            </form>
+                        @endif
+                        <a href="{{ route('dashboard.borrowings.show', $borrowing) }}" class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded">Detail</a>
                     </td>
                 </tr>
                 @empty

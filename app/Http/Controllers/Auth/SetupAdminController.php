@@ -44,6 +44,6 @@ class SetupAdminController extends Controller
 
         Auth::login($admin);
 
-        return redirect()->route('dashboard');
+        return redirect()->route('dashboard.index');
     }
 }

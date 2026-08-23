@@ -7,6 +7,7 @@ use App\Models\Borrowing;
 use App\Models\Fine;
 use App\Models\User;
 use App\Services\AlertService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -34,17 +35,17 @@ class BorrowingController extends Controller
 
         $books = Book::with('category')
             ->where('status', 'active')
-            ->when($search, function($query) use ($search) {
+            ->when($search, function ($query) use ($search) {
                 $query->where('title', 'like', "%{$search}%");
             })
             ->orderBy('title')
             ->paginate(6)
-            ->through(function($book) use ($alreadyBorrowedBookIds) {
+            ->through(function ($book) use ($alreadyBorrowedBookIds) {
                 $book->can_borrow = $book->available_stock > 0 && !$alreadyBorrowedBookIds->contains($book->id);
                 $book->already_borrowed = $alreadyBorrowedBookIds->contains($book->id);
                 return $book;
             });
-            
+
         $books->appends($request->only('search'));
 
         $memberBorrowings = Borrowing::with('book.category')
@@ -143,11 +144,11 @@ class BorrowingController extends Controller
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('borrow_code', 'like', "%{$search}%")
-                      ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%"))
-                      ->orWhereHas('book', fn ($b) => $b->where('title', 'like', "%{$search}%"));
+                        ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('book', fn($b) => $b->where('title', 'like', "%{$search}%"));
                 });
             })
-            ->when($status, fn ($query) => $query->where('status', $status))
+            ->when($status, fn($query) => $query->where('status', $status))
             ->latest()
             ->paginate(10)
             ->withQueryString();
@@ -166,7 +167,7 @@ class BorrowingController extends Controller
             ->where('status', 'active')
             ->orderBy('title')
             ->get()
-            ->filter(fn ($book) => $book->available_stock > 0);
+            ->filter(fn($book) => $book->available_stock > 0);
 
         return view('dashboard.borrowings.create', compact('members', 'books'));
     }
@@ -240,20 +241,62 @@ class BorrowingController extends Controller
         return view('dashboard.borrowings.show', compact('borrowing'));
     }
 
-    public function returnBook(Borrowing $borrowing)
+    public function confirmBook(Borrowing $borrowing)
     {
-        if ($borrowing->status === 'returned') {
-            AlertService::error('This borrowing has already been returned.');
+        if ($borrowing->status !== 'pending') {
+            AlertService::error('Only pending borrowings can be confirmed.');
+            return back();
+        }
+
+        if ($borrowing->book->available_stock <= 0) {
+            AlertService::error('Book is out of stock. Cannot confirm borrowing.');
+            return back();
+        }
+
+        $activeBorrowingsCount = Borrowing::where('user_id', $borrowing->user_id)
+            ->where('status', 'borrowed')
+            ->count();
+
+        if ($activeBorrowingsCount >= 3) {
+            AlertService::error('Member has reached the maximum of 3 active borrowings. Cannot confirm.');
             return back();
         }
 
         DB::transaction(function () use ($borrowing) {
-            $returnedAt = now();
+            $borrowing->update([
+                'status'       => 'borrowed',
+                'processed_by' => user()->id,
+                // Optional: Update borrow date to the day it was confirmed
+                // 'borrow_date'  => today(),
+                // 'due_date'     => today()->addDays(7),
+            ]);
+        });
+
+        AlertService::updated('Borrowing request confirmed successfully.');
+
+        return back();
+    }
+
+
+    public function returnBook(Borrowing $borrowing)
+    {
+        if ($borrowing->status === 'returned') {
+            AlertService::error('This borrowing has already been returned.');
+
+            return back();
+        }
+
+        DB::transaction(function () use ($borrowing) {
+            // TESTING ONLY:
+            // Anggap buku dikembalikan pada 22 Agustus 2026 pukul 10:00
+            $returnedAt = Carbon::parse('2026-08-31 10:00:00');
+
             $overdueDays = 0;
-            $fine = null;
 
             if ($returnedAt->gt($borrowing->due_date->endOfDay())) {
-                $overdueDays = (int) $borrowing->due_date->startOfDay()->diffInDays($returnedAt->startOfDay());
+                $overdueDays = (int) $borrowing->due_date
+                    ->startOfDay()
+                    ->diffInDays($returnedAt->startOfDay());
             }
 
             $borrowing->update([
@@ -264,6 +307,7 @@ class BorrowingController extends Controller
 
             if ($overdueDays > 0) {
                 $ratePerDay = 500;
+
                 Fine::create([
                     'borrowing_id' => $borrowing->id,
                     'rate_per_day' => $ratePerDay,

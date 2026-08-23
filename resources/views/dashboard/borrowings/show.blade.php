@@ -33,6 +33,14 @@
                                 Mark as Returned
                             </button>
                         </form>
+                    @elseif($borrowing->status === 'pending')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pending</span>
+                        <form action="{{ route('dashboard.borrowings.confirm', $borrowing) }}" method="POST" onsubmit="return confirm('Confirm this borrowing request?')" novalidate>
+                            @csrf
+                            <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-lg shadow-sm text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Confirm Request
+                            </button>
+                        </form>
                     @else
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Returned</span>
                     @endif
@@ -52,7 +60,7 @@
                     <p class="mt-1 text-sm text-gray-900 {{ $borrowing->status === 'borrowed' && $borrowing->due_date->isPast() ? 'text-red-600 font-semibold' : '' }}">
                         {{ $borrowing->due_date->format('d M Y') }}
                         @if($borrowing->status === 'borrowed' && $borrowing->due_date->isPast())
-                            <span class="text-xs font-normal">({{ now()->diffInDays($borrowing->due_date) }} days overdue)</span>
+                            <span class="text-xs font-normal">({{ now()->startOfDay()->diffInDays($borrowing->due_date->startOfDay()) }} days overdue)</span>
                         @endif
                     </p>
                 </div>

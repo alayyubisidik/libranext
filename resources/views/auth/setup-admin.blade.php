@@ -12,7 +12,6 @@
             <input id="setup_key" type="password" name="setup_key" required autofocus
                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
             <x-input-error :messages="$errors->get('setup_key')" class="mt-2" />
-            <p class="mt-1 text-xs text-gray-500">Check the <code class="bg-gray-100 px-1 py-0.5 rounded text-red-600 font-mono">ADMIN_SETUP_KEY</code> in your .env file.</p>
         </div>
 
         <div>
