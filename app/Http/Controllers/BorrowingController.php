@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
+use Spatie\Activitylog\Facades\Activity;
+
 class BorrowingController extends Controller
 {
     public function memberCreate(Request $request)
@@ -102,7 +104,7 @@ class BorrowingController extends Controller
         }
 
         DB::transaction(function () use ($member, $book) {
-            Borrowing::create([
+            $borrowing = Borrowing::create([
                 'user_id'     => $member->id,
                 'book_id'     => $book->id,
                 'borrow_code' => $this->generateUniqueBorrowCode(),
@@ -110,6 +112,11 @@ class BorrowingController extends Controller
                 'due_date'    => today()->addDays(7),
                 'status'      => 'pending',
             ]);
+
+            activity()
+                ->performedOn($borrowing)
+                ->causedBy($member)
+                ->log('Member requested to borrow a book');
         });
 
         AlertService::created('Book requested successfully. Please confirm with the admin.');
@@ -219,7 +226,7 @@ class BorrowingController extends Controller
         }
 
         DB::transaction(function () use ($validated, $member, $book) {
-            Borrowing::create([
+            $borrowing = Borrowing::create([
                 'user_id'     => $member->id,
                 'book_id'     => $book->id,
                 'borrow_code' => $this->generateUniqueBorrowCode(),
@@ -227,6 +234,11 @@ class BorrowingController extends Controller
                 'due_date'    => $validated['due_date'],
                 'status'      => 'borrowed',
             ]);
+
+            activity()
+                ->performedOn($borrowing)
+                ->causedBy(user())
+                ->log('Admin created a borrowing record');
         });
 
         AlertService::created('Borrowing record created successfully.');
@@ -270,6 +282,11 @@ class BorrowingController extends Controller
                 // 'borrow_date'  => today(),
                 // 'due_date'     => today()->addDays(7),
             ]);
+
+            activity()
+                ->performedOn($borrowing)
+                ->causedBy(user())
+                ->log('Admin confirmed borrowing request');
         });
 
         AlertService::updated('Borrowing request confirmed successfully.');
@@ -308,7 +325,7 @@ class BorrowingController extends Controller
             if ($overdueDays > 0) {
                 $ratePerDay = 500;
 
-                Fine::create([
+                $fine = Fine::create([
                     'borrowing_id' => $borrowing->id,
                     'rate_per_day' => $ratePerDay,
                     'overdue_days' => $overdueDays,
@@ -316,6 +333,11 @@ class BorrowingController extends Controller
                     'status'       => 'unpaid',
                 ]);
             }
+
+            activity()
+                ->performedOn($borrowing)
+                ->causedBy(user())
+                ->log('Admin marked book as returned');
         });
 
         AlertService::updated('Book returned successfully.');

@@ -52,13 +52,17 @@ Route::middleware(['auth'])->group(function () {
         Route::post('fines/{fine}/pay-cash', [FineController::class, 'payCash'])->name('fines.pay-cash');
         
         // Reports
-        Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
         Route::get('reports/borrowings', [\App\Http\Controllers\Admin\ReportController::class, 'borrowings'])->name('reports.borrowings');
         Route::get('reports/borrowings/export', [\App\Http\Controllers\Admin\ReportController::class, 'exportBorrowings'])->name('reports.borrowings.export');
+        Route::get('reports/returnings', [\App\Http\Controllers\Admin\ReportController::class, 'returnings'])->name('reports.returnings');
+        Route::get('reports/returnings/export', [\App\Http\Controllers\Admin\ReportController::class, 'exportReturnings'])->name('reports.returnings.export');
         Route::get('reports/fines', [\App\Http\Controllers\Admin\ReportController::class, 'fines'])->name('reports.fines');
         Route::get('reports/fines/export', [\App\Http\Controllers\Admin\ReportController::class, 'exportFines'])->name('reports.fines.export');
         Route::get('reports/payments', [\App\Http\Controllers\Admin\ReportController::class, 'payments'])->name('reports.payments');
         Route::get('reports/payments/export', [\App\Http\Controllers\Admin\ReportController::class, 'exportPayments'])->name('reports.payments.export');
+
+        // Activity Logs
+        Route::get('activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-logs.index');
     });
 });
 

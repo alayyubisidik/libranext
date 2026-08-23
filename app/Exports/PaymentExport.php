@@ -22,7 +22,7 @@ class PaymentExport implements FromCollection, WithHeadings, WithMapping
         $this->method = $method;
     }
 
-    public function collection()
+    public function collection(): \Illuminate\Support\Collection
     {
         $query = Payment::with(['fine.borrowing.user', 'fine.borrowing.book', 'user']);
 

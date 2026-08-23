@@ -231,15 +231,13 @@
 
 ## Phase 16 — Activity Log
 
-* [ ] Configure activity logging.
-* [ ] Log important book actions.
-* [ ] Log member actions.
-* [ ] Log borrowing actions.
-* [ ] Log returning actions.
-* [ ] Log cash payment confirmation.
-* [ ] Log payment status changes.
-* [ ] Create activity log list for Admin.
-* [ ] Add filters if needed.
+* [x] Configure activity logging.
+* [x] Log important book actions.
+* [x] Log borrowing actions.
+* [x] Log returning actions.
+* [x] Log payment cash and online
+* [x] Create activity log list for Admin.
+* [x] Add filters if needed.
 
 ## Phase 17 — Validation & Error Handling
 

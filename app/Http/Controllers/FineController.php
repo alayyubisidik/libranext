@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Payment;
 use Midtrans\Config;
 use Midtrans\Snap;
+use Spatie\Activitylog\Facades\Activity;
 
 class FineController extends Controller
 {
@@ -52,6 +53,11 @@ class FineController extends Controller
             'status' => 'waived'
         ]);
 
+        activity()
+            ->performedOn($fine)
+            ->causedBy(user())
+            ->log('Admin waived the fine');
+
         AlertService::updated('Fine waived successfully.');
 
         return back();
@@ -71,7 +77,7 @@ class FineController extends Controller
         $fine->loadMissing('borrowing.user');
 
         DB::transaction(function () use ($fine) {
-            Payment::create([
+            $payment = Payment::create([
                 'fine_id' => $fine->id,
                 'user_id' => $fine->borrowing->user_id,
                 'order_id' => 'CASH-' . time() . '-' . $fine->id,
@@ -84,6 +90,11 @@ class FineController extends Controller
             $fine->update([
                 'status' => 'paid'
             ]);
+
+            activity()
+                ->performedOn($payment)
+                ->causedBy(user())
+                ->log('Admin recorded a cash payment');
         });
 
         AlertService::success('Cash payment recorded successfully.');
@@ -127,6 +138,10 @@ class FineController extends Controller
         if ($fine && $fine->status !== 'paid') {
             $fine->update(['status' => 'paid']);
         }
+
+        activity()
+            ->performedOn($payment)
+            ->log('System confirmed midtrans online payment');
     }
 
     public function payMidtrans(Fine $fine)
@@ -179,7 +194,7 @@ class FineController extends Controller
             $snapToken = Snap::getSnapToken($params);
 
             DB::transaction(function () use ($fine, $orderId) {
-                Payment::create([
+                $payment = Payment::create([
                     'fine_id' => $fine->id,
                     'user_id' => $fine->borrowing->user_id,
                     'order_id' => $orderId,
@@ -187,6 +202,11 @@ class FineController extends Controller
                     'amount' => $fine->amount,
                     'status' => 'pending',
                 ]);
+
+                activity()
+                    ->performedOn($payment)
+                    ->causedBy(user())
+                    ->log('User initiated a midtrans online payment');
             });
 
             return view('dashboard.fines.midtrans', compact('fine', 'snapToken'));

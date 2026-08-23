@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Payment extends Model
 {
+    use LogsActivity;
+
     protected $fillable = [
         'fine_id',
         'user_id',
@@ -18,6 +22,14 @@ class Payment extends Model
         'paid_at',
         'raw_response',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     protected function casts(): array
     {

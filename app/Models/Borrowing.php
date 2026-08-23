@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Borrowing extends Model
 {
+    use LogsActivity;
+
     protected $fillable = [
         'user_id',
         'book_id',
@@ -16,6 +20,14 @@ class Borrowing extends Model
         'returned_at',
         'status',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     protected function casts(): array
     {

@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Fine extends Model
 {
+    use LogsActivity;
+
     protected $fillable = [
         'borrowing_id',
         'rate_per_day',
@@ -13,6 +17,14 @@ class Fine extends Model
         'amount',
         'status',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     protected function casts(): array
     {

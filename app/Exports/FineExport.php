@@ -20,7 +20,7 @@ class FineExport implements FromCollection, WithHeadings, WithMapping
         $this->status = $status;
     }
 
-    public function collection()
+    public function collection(): \Illuminate\Support\Collection
     {
         $query = Fine::with(['borrowing.user', 'borrowing.book']);
 

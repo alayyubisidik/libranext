@@ -7,32 +7,27 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class BorrowingExport implements FromCollection, WithHeadings, WithMapping
+class ReturningExport implements FromCollection, WithHeadings, WithMapping
 {
     protected $startDate;
     protected $endDate;
-    protected $status;
 
-    public function __construct($startDate = null, $endDate = null, $status = null)
+    public function __construct($startDate = null, $endDate = null)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
-        $this->status = $status;
     }
 
     public function collection(): \Illuminate\Support\Collection
     {
-        $query = Borrowing::with(['user', 'book']);
+        $query = Borrowing::with(['user', 'book', 'processedBy'])
+            ->where('status', 'returned');
 
         if ($this->startDate && $this->endDate) {
-            $query->whereBetween('borrow_date', [$this->startDate, $this->endDate]);
+            $query->whereBetween('returned_at', [$this->startDate, $this->endDate]);
         }
 
-        if ($this->status) {
-            $query->where('status', $this->status);
-        }
-
-        return $query->latest()->get();
+        return $query->latest('returned_at')->get();
     }
 
     public function headings(): array
@@ -45,7 +40,7 @@ class BorrowingExport implements FromCollection, WithHeadings, WithMapping
             'Borrow Date',
             'Due Date',
             'Return Date',
-            'Status'
+            'Processed By',
         ];
     }
 
@@ -58,8 +53,8 @@ class BorrowingExport implements FromCollection, WithHeadings, WithMapping
             $borrowing->book->title,
             $borrowing->borrow_date->format('Y-m-d'),
             $borrowing->due_date->format('Y-m-d'),
-            $borrowing->returned_at ? $borrowing->returned_at->format('Y-m-d') : '-',
-            ucfirst($borrowing->status)
+            $borrowing->returned_at->format('Y-m-d'),
+            $borrowing->processedBy ? $borrowing->processedBy->name : '-',
         ];
     }
 }
