@@ -220,14 +220,14 @@
 
 ## Phase 15 — Reports
 
-* [ ] Create borrowing report.
-* [ ] Create returning report.
-* [ ] Create fine report.
-* [ ] Create payment report.
-* [ ] Add date filters.
-* [ ] Add relevant status filters.
-* [ ] Add PDF export.
-* [ ] Add Excel export.
+* [x] Create borrowing report.
+* [x] Create returning report.
+* [x] Create fine report.
+* [x] Create payment report.
+* [x] Add date filters.
+* [x] Add relevant status filters.
+* [x] Add PDF export.
+* [x] Add Excel export.
 
 ## Phase 16 — Activity Log
 
