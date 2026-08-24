@@ -130,13 +130,7 @@
                 <h3 class="text-base font-semibold text-gray-900">Member</h3>
             </div>
             <div class="p-6 flex items-center gap-4">
-                @if($fine->borrowing->user->hasMedia('avatar'))
-                    <img src="{{ $fine->borrowing->user->getFirstMediaUrl('avatar') }}" alt="{{ $fine->borrowing->user->name }}" class="h-12 w-12 object-cover rounded-full border border-gray-200">
-                @else
-                    <div class="h-12 w-12 bg-blue-100 flex items-center justify-center rounded-full border border-blue-200 text-blue-600 font-bold">
-                        {{ substr($fine->borrowing->user->name, 0, 1) }}
-                    </div>
-                @endif
+                <img src="{{ $fine->borrowing->user->avatar_url }}" alt="{{ $fine->borrowing->user->name }}" class="h-12 w-12 object-cover rounded-full border border-gray-200">
                 <div>
                     <p class="text-sm font-semibold text-gray-900">{{ $fine->borrowing->user->name }}</p>
                     <p class="text-xs text-gray-500 font-mono">{{ $fine->borrowing->user->member_code }}</p>

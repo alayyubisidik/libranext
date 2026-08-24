@@ -38,13 +38,7 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
 
                     <div class="flex justify-center mb-5">
-                        @if($avatarUrl)
-                            <img src="{{ $avatarUrl }}" alt="{{ $user->name }}" class="w-24 h-24 rounded-full object-cover border-4 border-blue-100">
-                        @else
-                            <div class="w-24 h-24 rounded-full bg-blue-50 flex items-center justify-center border-4 border-blue-100">
-                                <svg class="w-12 h-12 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                            </div>
-                        @endif
+                        <img src="{{ $avatarUrl }}" alt="{{ $user->name }}" class="w-24 h-24 rounded-full object-cover border-4 border-blue-100">
                     </div>
 
                     <h2 class="text-xl font-bold text-gray-900">{{ $user->name }}</h2>

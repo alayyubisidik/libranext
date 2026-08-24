@@ -76,13 +76,7 @@
 @else
     <!-- Member Dashboard -->
     <div class="mb-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex items-center gap-4">
-        @if($user->hasMedia('avatar'))
-            <img src="{{ $user->getFirstMediaUrl('avatar') }}" alt="{{ $user->name }}" class="h-16 w-16 object-cover rounded-full border border-gray-200">
-        @else
-            <div class="h-16 w-16 bg-blue-100 flex items-center justify-center rounded-full border border-blue-200 text-blue-600 text-xl font-bold">
-                {{ substr($user->name, 0, 1) }}
-            </div>
-        @endif
+        <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="h-16 w-16 object-cover rounded-full border border-gray-200">
         <div>
             <h2 class="text-xl font-bold text-gray-900">Welcome, {{ $user->name }}!</h2>
             <p class="text-sm text-gray-500 font-mono mt-1">{{ $user->member_code }} • {{ ucfirst($user->member_status) }}</p>

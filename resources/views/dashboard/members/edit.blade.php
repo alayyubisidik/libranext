@@ -79,7 +79,7 @@
                     </div>
                 </div>
 
-                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200" x-data="{ imagePreview: '{{ $member->hasMedia('avatar') ? $member->getFirstMediaUrl('avatar') : '' }}', removeAvatar: false }">
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200" x-data="{ imagePreview: '{{ $member->avatar_url }}', removeAvatar: false }">
                     <h3 class="text-sm font-medium text-gray-900 mb-4">Profile Photo</h3>
                     
                     <input type="hidden" name="remove_avatar" :value="removeAvatar ? '1' : '0'">

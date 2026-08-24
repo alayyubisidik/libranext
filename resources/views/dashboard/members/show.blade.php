@@ -19,13 +19,7 @@
             <div class="bg-blue-600 h-24"></div>
             <div class="px-6 pb-6 relative">
                 <div class="-mt-12 mb-4 flex justify-center">
-                    @if($member->hasMedia('avatar'))
-                        <img src="{{ $member->getFirstMediaUrl('avatar') }}" alt="{{ $member->name }}" class="h-24 w-24 object-cover rounded-full border-4 border-white shadow-sm bg-white">
-                    @else
-                        <div class="h-24 w-24 bg-blue-100 flex items-center justify-center rounded-full border-4 border-white shadow-sm text-blue-600 font-bold text-2xl">
-                            {{ substr($member->name, 0, 1) }}
-                        </div>
-                    @endif
+                    <img src="{{ $member->avatar_url }}" alt="{{ $member->name }}" class="h-24 w-24 object-cover rounded-full border-4 border-white shadow-sm bg-white">
                 </div>
                 
                 <div class="text-center">

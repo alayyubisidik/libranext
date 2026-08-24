@@ -78,12 +78,7 @@
                                                 <a :href="`/attendance/member/${member.id}`"
                                                    class="flex items-center gap-4 p-3 rounded-xl border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer">
                                                     <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                                                        <template x-if="member.avatar_url">
-                                                            <img :src="member.avatar_url" :alt="member.name" class="w-12 h-12 object-cover rounded-full">
-                                                        </template>
-                                                        <template x-if="!member.avatar_url">
-                                                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                                        </template>
+                                                        <img :src="member.avatar_url" :alt="member.name" class="w-12 h-12 object-cover rounded-full">
                                                     </div>
                                                     <div class="flex-1 min-w-0">
                                                         <p class="font-medium text-gray-900 truncate" x-text="member.name"></p>

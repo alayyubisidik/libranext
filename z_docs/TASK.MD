@@ -345,3 +345,42 @@ Perform detailed UI work only after all features are functional.
 * [ ] Improve loading states.
 * [ ] Review responsive behavior.
 * [ ] Remove unnecessary visual complexity.
+
+
+## Phase 1 (v2) — Default Avatar Feature
+
+Fitur foto profil default untuk User (Admin & Member). Jika saat pembuatan akun tidak ada foto yang diupload, sistem otomatis memakai avatar default dari `public/assets/image/avatar.png`.
+
+### Setup Asset
+
+* [ ] Pastikan file `public/assets/image/avatar.png` tersedia dan ter-commit ke repo.
+* [ ] Tentukan path/konstanta terpusat untuk avatar default (hindari hardcode path berulang di banyak file), misal via config (`config('app.default_avatar')`) atau constant di model `User`.
+
+### Model & Logic
+
+* [ ] Tambahkan accessor/helper di model `User` (misal `getAvatarUrlAttribute()` atau method `avatarUrl()`) yang:
+  * [ ] Mengembalikan URL media Spatie Media Library jika user punya media avatar.
+  * [ ] Mengembalikan path default `avatar.png` jika user **tidak** punya media avatar.
+* [ ] Pastikan logic ini reusable untuk dipakai di semua tempat avatar ditampilkan (sidebar, topbar, list member, detail member, dashboard, dsb).
+
+### Integrasi — Admin Setup Flow
+
+* [ ] Saat proses setup admin awal (yang tidak ada input upload foto), pastikan admin yang terbentuk otomatis "dianggap" memakai avatar default (tanpa perlu insert media).
+* [ ] Verifikasi tampilan topbar/sidebar admin menampilkan avatar default dengan benar setelah setup.
+
+### Integrasi — Member CRUD
+
+* [ ] Saat create member **tanpa** upload foto profil → tidak perlu attach media, cukup andalkan accessor default.
+* [ ] Saat edit member: jika user menghapus foto yang sudah ada (tanpa upload foto baru) → sistem fallback ke avatar default.
+* [ ] Saat replace foto (upload foto baru menggantikan lama) → media lama dihapus, media baru jadi avatar aktif (behaviour existing tetap dipakai, hanya pastikan fallback default tidak konflik).
+
+### Integrasi — Tampilan (UI)
+
+* [ ] Pastikan semua tempat yang menampilkan foto profil user (list member, detail member, dashboard member, topbar admin, topbar member, halaman absen/attendance jika relevan) memakai accessor/helper avatar terpusat — bukan langsung query media manual.
+* [ ] Pastikan tidak ada broken image / path 404 ketika user belum punya foto sama sekali.
+
+### Validasi & Edge Case
+
+* [ ] Tidak boleh mewajibkan upload foto saat create admin/member (field tetap optional).
+* [ ] Avatar default tidak boleh tersimpan sebagai media record di Spatie Media Library (cukup fallback di level tampilan, bukan insert ke DB) — hindari duplikasi data.
+* [ ] Pastikan avatar default tetap konsisten tampil walau setelah beberapa kali edit profil tanpa upload foto.

@@ -57,13 +57,7 @@
                 @forelse($members as $member)
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        @if($member->hasMedia('avatar'))
-                            <img src="{{ $member->getFirstMediaUrl('avatar') }}" alt="{{ $member->name }}" class="h-10 w-10 object-cover rounded-full shadow-sm border border-gray-200">
-                        @else
-                            <div class="h-10 w-10 bg-blue-100 flex items-center justify-center rounded-full border border-blue-200 text-blue-600 font-bold">
-                                {{ substr($member->name, 0, 1) }}
-                            </div>
-                        @endif
+                        <img src="{{ $member->avatar_url }}" alt="{{ $member->name }}" class="h-10 w-10 object-cover rounded-full shadow-sm border border-gray-200">
                     </td>
                     <td class="px-6 py-4">
                         <div class="text-sm font-semibold text-gray-900">{{ $member->name }}</div>

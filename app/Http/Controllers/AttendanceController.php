@@ -32,7 +32,7 @@ class AttendanceController extends Controller
             ->limit(10)
             ->get()
             ->map(function ($member) {
-                $member->avatar_url = $member->getFirstMediaUrl('avatar');
+                $member->avatar_url = $member->avatar_url;
                 return $member;
             });
 
@@ -45,7 +45,7 @@ class AttendanceController extends Controller
     {
         abort_unless($user->hasRole('member') && $user->member_status === 'active', 404);
 
-        $avatarUrl = $user->getFirstMediaUrl('avatar');
+        $avatarUrl = $user->avatar_url;
 
         return view('attendance.show', compact('user', 'avatarUrl'));
     }

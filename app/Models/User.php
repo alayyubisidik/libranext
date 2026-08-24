@@ -67,6 +67,15 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(Attendance::class);
     }
 
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->hasMedia('avatar')) {
+            return $this->getFirstMediaUrl('avatar');
+        }
+
+        return asset('assets/images/avatar.png');
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('avatar')->singleFile();
