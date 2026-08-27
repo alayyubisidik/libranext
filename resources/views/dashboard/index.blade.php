@@ -17,7 +17,6 @@
             <a href="{{ $card['url'] }}" class="block bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                 <p class="text-sm font-medium text-gray-500">{{ $card['label'] }}</p>
                 <h3 class="text-3xl font-bold mt-2 {{ $card['color'] === 'red' ? 'text-red-600' : 'text-gray-900' }}">{{ number_format($card['value'] ?? 0) }}</h3>
-                <p class="text-xs text-blue-600 mt-3 font-medium">View details</p>
             </a>
         @endforeach
     </div>
@@ -66,7 +65,6 @@
                 <a href="{{ $item['url'] }}" class="block border border-gray-200 rounded-lg p-4 transition duration-200 hover:-translate-y-1 hover:shadow-md hover:border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     <p class="text-sm text-gray-500">{{ $item['label'] }}</p>
                     <p class="text-2xl font-bold text-gray-900">{{ number_format($item['value'] ?? 0) }}</p>
-                    <p class="text-xs text-blue-600 mt-2 font-medium">View details</p>
                 </a>
             @endforeach
         </div>
@@ -77,12 +75,14 @@
             <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
         </div>
         <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            @can('create books')<a href="{{ route('dashboard.books.create') }}" class="px-4 py-3 rounded-lg bg-blue-600 text-white text-sm font-medium text-center hover:bg-blue-700">Add Book</a>@endcan
-            @can('create members')<a href="{{ route('dashboard.members.create') }}" class="px-4 py-3 rounded-lg bg-blue-600 text-white text-sm font-medium text-center hover:bg-blue-700">Add Member</a>@endcan
-            @can('create borrowings')<a href="{{ route('dashboard.borrowings.create') }}" class="px-4 py-3 rounded-lg bg-blue-600 text-white text-sm font-medium text-center hover:bg-blue-700">Process Borrowing</a>@endcan
-            @can('view borrowings')<a href="{{ route('dashboard.borrowings.index', ['status' => 'borrowed']) }}" class="px-4 py-3 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium text-center hover:bg-gray-200">Process Return</a>@endcan
-            @can('view borrowings')<a href="{{ route('dashboard.borrowings.index', ['status' => 'overdue']) }}" class="px-4 py-3 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium text-center hover:bg-gray-200">View Overdue</a>@endcan
-            @can('view fines')<a href="{{ route('dashboard.fines.index') }}" class="px-4 py-3 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium text-center hover:bg-gray-200">View Fines</a>@endcan
+            @role('admin')
+                <a href="{{ route('dashboard.books.create') }}" class="px-4 py-3 rounded-lg bg-blue-600 text-white text-sm font-medium text-center hover:bg-blue-700">Add Book</a>
+                <a href="{{ route('dashboard.members.create') }}" class="px-4 py-3 rounded-lg bg-blue-600 text-white text-sm font-medium text-center hover:bg-blue-700">Add Member</a>
+                <a href="{{ route('dashboard.borrowings.create') }}" class="px-4 py-3 rounded-lg bg-blue-600 text-white text-sm font-medium text-center hover:bg-blue-700">Process Borrowing</a>
+                <a href="{{ route('dashboard.borrowings.index', ['status' => 'borrowed']) }}" class="px-4 py-3 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium text-center hover:bg-gray-200">Process Return</a>
+                <a href="{{ route('dashboard.borrowings.index', ['status' => 'overdue']) }}" class="px-4 py-3 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium text-center hover:bg-gray-200">View Overdue</a>
+                <a href="{{ route('dashboard.fines.index') }}" class="px-4 py-3 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium text-center hover:bg-gray-200">View Fines</a>
+            @endrole
         </div>
     </div>
 @else
