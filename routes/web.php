@@ -47,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('dashboard/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('dashboard.profile.update');
 
     Route::middleware(['role.admin'])->prefix('dashboard')->name('dashboard.')->group(function () {
+        Route::post('categories/bulk-status', [CategoryController::class, 'bulkStatus'])->name('categories.bulk-status');
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::post('books/bulk-status', [BookController::class, 'bulkStatus'])->name('books.bulk-status');
         Route::resource('books', BookController::class)->except(['show']);

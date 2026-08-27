@@ -11,11 +11,19 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $status = $request->input('status');
+        $sort = $request->input('sort', 'latest');
 
         $categories = Category::query()
             ->when($search, fn ($query) => $query->where('name', 'like', "%{$search}%"))
+            ->when($status, fn ($query) => $query->where('status', $status))
             ->withCount('books')
-            ->latest()
+            ->when($sort === 'name_asc', fn ($query) => $query->orderBy('name', 'asc'))
+            ->when($sort === 'name_desc', fn ($query) => $query->orderBy('name', 'desc'))
+            ->when($sort === 'books_asc', fn ($query) => $query->orderBy('books_count', 'asc'))
+            ->when($sort === 'books_desc', fn ($query) => $query->orderBy('books_count', 'desc'))
+            ->when($sort === 'oldest', fn ($query) => $query->oldest())
+            ->when($sort === 'latest' || !$sort, fn ($query) => $query->latest())
             ->paginate(10)
             ->withQueryString();
 
@@ -86,5 +94,20 @@ class CategoryController extends Controller
         AlertService::deleted('Category deleted successfully');
 
         return to_route('dashboard.categories.index');
+    }
+
+    public function bulkStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'ids'    => ['required', 'array'],
+            'ids.*'  => ['integer', 'exists:categories,id'],
+            'status' => ['required', 'in:active,inactive'],
+        ]);
+
+        Category::whereIn('id', $validated['ids'])->update(['status' => $validated['status']]);
+
+        AlertService::updated('Categories status updated successfully.');
+
+        return back();
     }
 }

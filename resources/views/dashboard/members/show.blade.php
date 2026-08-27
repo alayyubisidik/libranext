@@ -12,7 +12,7 @@
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
+
     <!-- Profile Card -->
     <div class="lg:col-span-1">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -21,11 +21,11 @@
                 <div class="-mt-12 mb-4 flex justify-center">
                     <img src="{{ $member->avatar_url }}" alt="{{ $member->name }}" class="h-24 w-24 object-cover rounded-full border-4 border-white shadow-sm bg-white">
                 </div>
-                
+
                 <div class="text-center">
                     <h2 class="text-xl font-bold text-gray-900">{{ $member->name }}</h2>
                     <p class="text-sm text-gray-500 font-mono mt-1">{{ $member->member_code }}</p>
-                    
+
                     <div class="mt-3">
                         @if($member->member_status === 'active')
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -38,7 +38,7 @@
                         @endif
                     </div>
                 </div>
-                
+
                 <div class="mt-6 border-t border-gray-100 pt-6 space-y-4">
                     <div>
                         <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</p>
@@ -61,14 +61,14 @@
                             @endif
                         </div>
                     </div>
-                    
+
                     @if($member->address)
                     <div>
                         <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Address</p>
                         <p class="mt-2 text-sm text-gray-900">{{ $member->address }}</p>
                     </div>
                     @endif
-                    
+
                     <div>
                         <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">System</p>
                         <p class="mt-2 text-sm text-gray-900">Joined on {{ $member->joined_at?->format('d M Y') }}</p>
@@ -86,30 +86,49 @@
 
     <!-- Details -->
     <div class="lg:col-span-2 space-y-6">
-        
-        <!-- Stats -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex items-center gap-4">
-                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+
+        <!-- Quick Member Activity: Borrowings Section -->
+        <div>
+            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">Borrowing Activity</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <p class="text-xs font-medium text-gray-500">Total Borrowings</p>
+                    <h4 class="text-2xl font-bold text-gray-900 mt-1">{{ $totalBorrowings }}</h4>
                 </div>
-                <div>
-                    <p class="text-sm font-medium text-gray-500">Active Borrowings</p>
-                    <h3 class="text-xl font-bold text-gray-900">{{ $member->borrowings->where('status', 'borrowed')->count() }}</h3>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <p class="text-xs font-medium text-gray-500">Currently Borrowed</p>
+                    <h4 class="text-2xl font-bold text-blue-600 mt-1">{{ $currentlyBorrowed }}</h4>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <p class="text-xs font-medium text-gray-500">Returned</p>
+                    <h4 class="text-2xl font-bold text-green-600 mt-1">{{ $returned }}</h4>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <p class="text-xs font-medium text-gray-500">Overdue</p>
+                    <h4 class="text-2xl font-bold text-red-600 mt-1">{{ $overdue }}</h4>
                 </div>
             </div>
+        </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex items-center gap-4">
-                <div class="p-3 bg-orange-50 text-orange-600 rounded-lg">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                </div>
+        <!-- Quick Member Activity: Fines Section -->
+        <div>
+            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">Fines</h3>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Unpaid Fines</p>
-                    @php
-                        $unpaidFines = App\Models\Fine::whereHas('borrowing', fn($q) => $q->where('user_id', $member->id))->where('status', 'unpaid')->sum('amount');
-                    @endphp
-                    <h3 class="text-xl font-bold text-gray-900">Rp{{ number_format($unpaidFines, 0, ',', '.') }}</h3>
+                    <p class="text-xs font-medium text-gray-500">Outstanding Fines</p>
+                    <h4 class="text-2xl font-bold {{ $outstandingFines > 0 ? 'text-red-600' : 'text-gray-900' }} mt-1">
+                        Rp{{ number_format($outstandingFines, 0, ',', '.') }}
+                    </h4>
                 </div>
+                @if($outstandingFines > 0)
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        Unpaid
+                    </span>
+                @else
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        No Fines
+                    </span>
+                @endif
             </div>
         </div>
 
@@ -119,7 +138,7 @@
                 <h3 class="text-base font-semibold text-gray-900">Borrowing History</h3>
                 <span class="text-sm text-gray-500">Total: {{ $member->borrowings->count() }}</span>
             </div>
-            
+
             @if($member->borrowings->isEmpty())
                 <div class="p-6 text-center text-gray-500">
                     <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>

@@ -15,6 +15,7 @@ class MemberController extends Controller
     {
         $search = $request->input('search');
         $status = $request->input('status');
+        $sort   = $request->input('sort', 'latest');
 
         $members = User::role('member')
             ->with('media')
@@ -26,7 +27,10 @@ class MemberController extends Controller
                 });
             })
             ->when($status, fn ($query) => $query->where('member_status', $status))
-            ->latest()
+            ->when($sort === 'name_asc',  fn ($query) => $query->orderBy('name', 'asc'))
+            ->when($sort === 'name_desc', fn ($query) => $query->orderBy('name', 'desc'))
+            ->when($sort === 'oldest',    fn ($query) => $query->oldest())
+            ->when($sort === 'latest' || !$sort, fn ($query) => $query->latest())
             ->paginate(10)
             ->withQueryString();
 
@@ -81,9 +85,15 @@ class MemberController extends Controller
             abort(404);
         }
 
-        $member->loadMissing(['media', 'borrowings.book', 'payments']);
+        $member->loadMissing(['media', 'borrowings.book', 'borrowings.fine', 'payments']);
 
-        return view('dashboard.members.show', compact('member'));
+        $totalBorrowings    = $member->borrowings->count();
+        $currentlyBorrowed  = $member->borrowings->where('status', 'borrowed')->count();
+        $returned           = $member->borrowings->where('status', 'returned')->count();
+        $overdue            = $member->borrowings->filter(fn ($b) => $b->status === 'borrowed' && $b->due_date->isPast())->count();
+        $outstandingFines   = $member->borrowings->flatMap->fine->whereNotNull('id')->whereIn('status', ['unpaid', 'partial'])->sum('amount');
+
+        return view('dashboard.members.show', compact('member', 'totalBorrowings', 'currentlyBorrowed', 'returned', 'overdue', 'outstandingFines'));
     }
 
     public function edit(User $member)
