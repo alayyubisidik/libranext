@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
 use App\Models\Book;
 use App\Models\Borrowing;
 use App\Models\Fine;
@@ -13,16 +14,35 @@ class DashboardController extends Controller
     public function index()
     {
         if (user()->hasRole('admin')) {
+            $today = today();
+            $lowStockThreshold = 2;
+
             $stats = [
-                'total_books'        => Book::count(),
                 'total_members'      => User::role('member')->count(),
-                'active_borrowings'  => Borrowing::where('status', 'borrowed')->count(),
-                'overdue_borrowings' => Borrowing::where('status', 'borrowed')->where('due_date', '<', today())->count(),
-                'available_stock'    => Book::sum('stock'),
-                'unpaid_fines'       => Fine::where('status', 'unpaid')->sum('amount'),
+                'active_members'     => User::role('member')->where('member_status', 'active')->count(),
+                'total_books'        => Book::count(),
+                'available_books'    => Book::sum('stock'),
+                'active_borrowings'  => Borrowing::whereIn('status', ['pending', 'borrowed', 'overdue'])->count(),
+                'overdue_borrowings' => Borrowing::where('status', 'overdue')->count(),
             ];
 
-            return view('dashboard.index', compact('stats'));
+            $needsAttention = [
+                'pending_borrowings'  => Borrowing::where('status', 'pending')->count(),
+                'overdue_borrowings'  => $stats['overdue_borrowings'],
+                'unpaid_fines_count'  => Fine::where('status', 'unpaid')->count(),
+                'unpaid_fines_amount' => Fine::where('status', 'unpaid')->sum('amount'),
+                'low_stock_books'     => Book::where('stock', '<=', $lowStockThreshold)->count(),
+            ];
+
+            $todaySummary = [
+                'new_members'    => User::role('member')->whereDate('joined_at', $today)->count(),
+                'new_borrowings' => Borrowing::whereDate('borrow_date', $today)->count(),
+                'books_returned' => Borrowing::whereDate('returned_at', $today)->count(),
+                'new_fines'      => Fine::whereDate('created_at', $today)->count(),
+                'library_visits' => Attendance::whereDate('check_in_at', $today)->count(),
+            ];
+
+            return view('dashboard.index', compact('stats', 'needsAttention', 'todaySummary'));
         }
 
         // Member dashboard logic
