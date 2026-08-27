@@ -245,6 +245,54 @@
             </div>
         </div>
     </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-8 mb-8">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-900">Attendance Overview</h2>
+            <span class="text-sm text-gray-500">Last 7 days</span>
+        </div>
+        <div class="p-6 space-y-4">
+            @foreach($chartLabels as $index => $label)
+                @php $maxVisits = max((int) $attendanceChart->max(), 1); @endphp
+                <div>
+                    <div class="flex justify-between text-sm text-gray-600 mb-1"><span>{{ $label }}</span><span>{{ $attendanceChart[$index] }} visits</span></div>
+                    <div class="h-3 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-purple-500" style="width: {{ ($attendanceChart[$index] / $maxVisits) * 100 }}%"></div></div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5"><p class="text-sm text-gray-500">Today's Visits</p><p class="text-2xl font-bold text-gray-900">{{ number_format($attendanceStats['today']) }}</p></div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5"><p class="text-sm text-gray-500">This Week</p><p class="text-2xl font-bold text-gray-900">{{ number_format($attendanceStats['week']) }}</p></div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5"><p class="text-sm text-gray-500">This Month</p><p class="text-2xl font-bold text-gray-900">{{ number_format($attendanceStats['month']) }}</p></div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between"><h2 class="text-lg font-semibold text-gray-900">New Members</h2><a href="{{ route('dashboard.members.index') }}" class="text-sm text-blue-600 hover:underline">View All</a></div>
+            <div class="divide-y divide-gray-200">@forelse($newMembers as $member)<div class="p-4 flex gap-3"><img src="{{ $member->avatar_url }}" alt="{{ $member->name }}" class="h-10 w-10 rounded-full object-cover border"><div><p class="text-sm font-semibold text-gray-900">{{ $member->name }}</p><p class="text-xs text-gray-500">{{ $member->member_code }} • {{ $member->joined_at?->format('d M Y') ?? $member->created_at?->format('d M Y') }}</p><span class="inline-flex mt-1 px-2 py-0.5 rounded-full text-xs font-medium {{ $member->member_status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">{{ ucfirst($member->member_status) }}</span></div></div>@empty<div class="p-6 text-center text-gray-500 text-sm">No members found.</div>@endforelse</div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between"><h2 class="text-lg font-semibold text-gray-900">Most Active Members</h2><a href="{{ route('dashboard.members.index') }}" class="text-sm text-blue-600 hover:underline">View All</a></div>
+            <div class="divide-y divide-gray-200">@forelse($mostActiveMembers as $member)<div class="p-4 flex justify-between"><div><p class="text-sm font-semibold text-gray-900">{{ $member->name }}</p><p class="text-xs text-gray-500">{{ $member->member_code }}</p></div><p class="text-sm font-bold text-blue-600">{{ $member->borrowings_count }} borrowings</p></div>@empty<div class="p-6 text-center text-gray-500 text-sm">No borrowing data yet.</div>@endforelse</div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50"><h2 class="text-lg font-semibold text-gray-900">Member Visits</h2></div>
+            <div class="divide-y divide-gray-200">@forelse($memberVisits as $member)<div class="p-4 flex justify-between"><div><p class="text-sm font-semibold text-gray-900">{{ $member->name }}</p><p class="text-xs text-gray-500">{{ $member->member_code }}</p></div><p class="text-sm font-bold text-purple-600">{{ $member->attendances_count }} visits</p></div>@empty<div class="p-6 text-center text-gray-500 text-sm">No attendance data yet.</div>@endforelse</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-red-200 bg-red-50 flex justify-between"><h2 class="text-lg font-semibold text-red-700">Highest Outstanding Fines</h2><a href="{{ route('dashboard.fines.index', ['status' => 'unpaid']) }}" class="text-sm text-red-600 hover:underline">View All</a></div>
+            <div class="divide-y divide-gray-200">@forelse($highestOutstandingFines as $member)<div class="p-4 flex justify-between"><div><p class="text-sm font-semibold text-gray-900">{{ $member->name }}</p><p class="text-xs text-gray-500">{{ $member->member_code }}</p></div><p class="text-sm font-bold text-red-600">Rp{{ number_format($member->unpaid_fines_total, 0, ',', '.') }}</p></div>@empty<div class="p-6 text-center text-gray-500 text-sm">No unpaid fines.</div>@endforelse</div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50"><h2 class="text-lg font-semibold text-gray-900">Member Status Summary</h2></div>
+            <div class="p-6 grid grid-cols-2 gap-4"><div class="border border-gray-200 rounded-lg p-4"><p class="text-sm text-gray-500">Active Members</p><p class="text-2xl font-bold text-green-600">{{ number_format($memberStatusSummary['active']) }}</p></div><div class="border border-gray-200 rounded-lg p-4"><p class="text-sm text-gray-500">Inactive Members</p><p class="text-2xl font-bold text-gray-700">{{ number_format($memberStatusSummary['inactive']) }}</p></div></div>
+        </div>
+    </div>
 @else
     <!-- Member Dashboard -->
     <div class="mb-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex items-center gap-4">

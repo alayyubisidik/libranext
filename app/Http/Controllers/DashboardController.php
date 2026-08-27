@@ -90,6 +90,49 @@ class DashboardController extends Controller
 
             $maxCategoryBorrowings = max((int) $popularCategories->max('borrowings_count'), 1);
 
+            $attendanceStats = [
+                'today' => Attendance::whereDate('check_in_at', $today)->count(),
+                'week' => Attendance::whereBetween('check_in_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+                'month' => Attendance::whereBetween('check_in_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
+            ];
+
+            $attendanceChart = $chartDates->map(fn ($date) => Attendance::whereDate('check_in_at', $date)->count());
+
+            $newMembers = User::role('member')
+                ->with('media')
+                ->orderByRaw('COALESCE(joined_at, created_at) DESC')
+                ->limit(5)
+                ->get();
+
+            $mostActiveMembers = User::role('member')
+                ->withCount('borrowings')
+                ->has('borrowings')
+                ->orderByDesc('borrowings_count')
+                ->limit(5)
+                ->get();
+
+            $memberVisits = User::role('member')
+                ->withCount('attendances')
+                ->has('attendances')
+                ->orderByDesc('attendances_count')
+                ->limit(5)
+                ->get();
+
+            $highestOutstandingFines = User::role('member')
+                ->select('users.*', DB::raw('SUM(fines.amount) as unpaid_fines_total'))
+                ->join('borrowings', 'borrowings.user_id', '=', 'users.id')
+                ->join('fines', 'fines.borrowing_id', '=', 'borrowings.id')
+                ->where('fines.status', 'unpaid')
+                ->groupBy('users.id', 'users.name', 'users.email', 'users.email_verified_at', 'users.password', 'users.member_code', 'users.phone', 'users.address', 'users.date_of_birth', 'users.member_status', 'users.joined_at', 'users.remember_token', 'users.created_at', 'users.updated_at')
+                ->orderByDesc('unpaid_fines_total')
+                ->limit(5)
+                ->get();
+
+            $memberStatusSummary = [
+                'active' => User::role('member')->where('member_status', 'active')->count(),
+                'inactive' => User::role('member')->where('member_status', 'inactive')->count(),
+            ];
+
             return view('dashboard.index', compact(
                 'stats',
                 'needsAttention',
@@ -104,7 +147,14 @@ class DashboardController extends Controller
                 'lowStockBooks',
                 'newBooks',
                 'popularCategories',
-                'maxCategoryBorrowings'
+                'maxCategoryBorrowings',
+                'attendanceStats',
+                'attendanceChart',
+                'newMembers',
+                'mostActiveMembers',
+                'memberVisits',
+                'highestOutstandingFines',
+                'memberStatusSummary'
             ));
         }
 
