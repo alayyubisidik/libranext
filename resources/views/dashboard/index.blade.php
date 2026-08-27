@@ -70,7 +70,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
         <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
             <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
         </div>
@@ -83,6 +83,166 @@
                 <a href="{{ route('dashboard.borrowings.index', ['status' => 'overdue']) }}" class="px-4 py-3 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium text-center hover:bg-gray-200">View Overdue</a>
                 <a href="{{ route('dashboard.fines.index') }}" class="px-4 py-3 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium text-center hover:bg-gray-200">View Fines</a>
             @endrole
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-900">Borrowing Overview</h2>
+            <span class="text-sm text-gray-500">Last 7 days</span>
+        </div>
+        <div class="p-6 space-y-4">
+            @foreach($chartLabels as $index => $label)
+                @php
+                    $total = max($chartBorrowings[$index] + $chartReturns[$index] + $chartOverdue[$index], 1);
+                @endphp
+                <div>
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>{{ $label }}</span>
+                        <span>Borrow {{ $chartBorrowings[$index] }} • Return {{ $chartReturns[$index] }} • Overdue {{ $chartOverdue[$index] }}</span>
+                    </div>
+                    <div class="h-3 bg-gray-100 rounded-full overflow-hidden flex">
+                        <div class="bg-blue-500" style="width: {{ ($chartBorrowings[$index] / $total) * 100 }}%"></div>
+                        <div class="bg-green-500" style="width: {{ ($chartReturns[$index] / $total) * 100 }}%"></div>
+                        <div class="bg-red-500" style="width: {{ ($chartOverdue[$index] / $total) * 100 }}%"></div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-red-200 bg-red-50 flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-red-700">Overdue Borrowings</h2>
+                <a href="{{ route('dashboard.borrowings.index', ['status' => 'overdue']) }}" class="text-sm text-red-600 hover:underline">View All</a>
+            </div>
+            <div class="divide-y divide-gray-200">
+                @forelse($overdueBorrowings as $borrowing)
+                    <div class="p-4 flex flex-col sm:flex-row gap-3 justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-900">{{ $borrowing->user?->name ?? '-' }}</p>
+                            <p class="text-sm text-gray-500">{{ $borrowing->book?->title ?? '-' }}</p>
+                            <p class="text-xs text-gray-400">Due {{ $borrowing->due_date?->format('d M Y') }} • {{ $borrowing->due_date?->diffInDays(today()) }} days overdue</p>
+                        </div>
+                        <div class="text-sm text-right">
+                            <p class="font-semibold text-red-600">Rp{{ number_format($borrowing->fine?->amount ?? 0, 0, ',', '.') }}</p>
+                            <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Overdue</span>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-gray-500 text-sm">No overdue borrowings.</div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-gray-900">Recent Borrowings</h2>
+                <a href="{{ route('dashboard.borrowings.index') }}" class="text-sm text-blue-600 hover:underline">View All</a>
+            </div>
+            <div class="divide-y divide-gray-200">
+                @forelse($recentBorrowings as $borrowing)
+                    <div class="p-4 flex flex-col sm:flex-row gap-3 justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-900">{{ $borrowing->user?->name ?? '-' }}</p>
+                            <p class="text-sm text-gray-500">{{ $borrowing->book?->title ?? '-' }}</p>
+                            <p class="text-xs text-gray-400">Borrow {{ $borrowing->borrow_date?->format('d M Y') }} • Due {{ $borrowing->due_date?->format('d M Y') }}</p>
+                        </div>
+                        <span class="self-start sm:self-center inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{{ ucfirst($borrowing->status) }}</span>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-gray-500 text-sm">No recent borrowings.</div>
+                @endforelse
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-gray-900">Most Borrowed Books</h2>
+                <a href="{{ route('dashboard.books.index') }}" class="text-sm text-blue-600 hover:underline">View All Books</a>
+            </div>
+            <div class="divide-y divide-gray-200">
+                @forelse($mostBorrowedBooks as $book)
+                    <div class="p-4">
+                        <p class="text-sm font-semibold text-gray-900">{{ $book->title }}</p>
+                        <p class="text-xs text-gray-500">{{ $book->author }} • {{ $book->category?->name ?? '-' }}</p>
+                        <p class="text-sm font-semibold text-blue-600 mt-1">{{ $book->borrowings_count }} borrowings</p>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-gray-500 text-sm">No borrowing data yet.</div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-yellow-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-yellow-200 bg-yellow-50 flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-yellow-700">Low Stock Books</h2>
+                <a href="{{ route('dashboard.books.index', ['stock' => 'low_stock']) }}" class="text-sm text-yellow-700 hover:underline">View All</a>
+            </div>
+            <div class="divide-y divide-gray-200">
+                @forelse($lowStockBooks as $book)
+                    <div class="p-4 flex justify-between gap-3">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-900">{{ $book->title }}</p>
+                            <p class="text-xs text-gray-500">{{ $book->author }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-bold text-gray-900">{{ $book->stock }}</p>
+                            <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ $book->stock == 0 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800' }}">{{ $book->stock == 0 ? 'Out of Stock' : 'Low Stock' }}</span>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-gray-500 text-sm">All books have normal stock.</div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-gray-900">New Books</h2>
+                <a href="{{ route('dashboard.books.index') }}" class="text-sm text-blue-600 hover:underline">View All</a>
+            </div>
+            <div class="divide-y divide-gray-200">
+                @forelse($newBooks as $book)
+                    <div class="p-4 flex gap-3">
+                        @if($book->hasMedia('cover'))
+                            <img src="{{ $book->getFirstMediaUrl('cover') }}" alt="{{ $book->title }}" class="h-14 w-10 object-cover rounded border border-gray-200">
+                        @else
+                            <div class="h-14 w-10 rounded border border-gray-200 bg-gray-100"></div>
+                        @endif
+                        <div>
+                            <p class="text-sm font-semibold text-gray-900">{{ $book->title }}</p>
+                            <p class="text-xs text-gray-500">{{ $book->author }} • {{ $book->category?->name ?? '-' }}</p>
+                            <p class="text-xs text-gray-400">Stock {{ $book->stock }}</p>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-gray-500 text-sm">No books found.</div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden xl:col-span-3">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-900">Popular Categories</h2>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                @forelse($popularCategories as $category)
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <p class="text-sm font-semibold text-gray-900">{{ $category->name }}</p>
+                        <p class="text-xs text-gray-500">{{ $category->books_count }} books</p>
+                        <p class="text-sm font-semibold text-blue-600 mt-2">{{ $category->borrowings_count }} borrowings</p>
+                        <div class="h-2 bg-gray-100 rounded-full overflow-hidden mt-2">
+                            <div class="h-full bg-blue-500" style="width: {{ ($category->borrowings_count / $maxCategoryBorrowings) * 100 }}%"></div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="md:col-span-2 lg:col-span-5 text-center text-gray-500 text-sm">No category borrowing data yet.</div>
+                @endforelse
+            </div>
         </div>
     </div>
 @else

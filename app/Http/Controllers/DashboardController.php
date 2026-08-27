@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\Book;
 use App\Models\Borrowing;
+use App\Models\Category;
 use App\Models\Fine;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -42,7 +44,68 @@ class DashboardController extends Controller
                 'library_visits' => Attendance::whereDate('check_in_at', $today)->count(),
             ];
 
-            return view('dashboard.index', compact('stats', 'needsAttention', 'todaySummary'));
+            $chartDates = collect(range(6, 0))->map(fn ($daysAgo) => today()->subDays($daysAgo));
+            $chartLabels = $chartDates->map(fn ($date) => $date->format('d M'));
+            $chartBorrowings = $chartDates->map(fn ($date) => Borrowing::whereDate('borrow_date', $date)->count());
+            $chartReturns = $chartDates->map(fn ($date) => Borrowing::whereDate('returned_at', $date)->count());
+            $chartOverdue = $chartDates->map(fn ($date) => Borrowing::where('status', 'overdue')->whereDate('due_date', $date)->count());
+
+            $overdueBorrowings = Borrowing::with(['user', 'book', 'fine'])
+                ->where('status', 'overdue')
+                ->orderBy('due_date')
+                ->limit(5)
+                ->get();
+
+            $recentBorrowings = Borrowing::with(['user', 'book'])
+                ->latest()
+                ->limit(5)
+                ->get();
+
+            $mostBorrowedBooks = Book::with('category')
+                ->withCount('borrowings')
+                ->has('borrowings')
+                ->orderByDesc('borrowings_count')
+                ->limit(5)
+                ->get();
+
+            $lowStockBooks = Book::where('stock', '<=', $lowStockThreshold)
+                ->orderBy('stock')
+                ->limit(5)
+                ->get();
+
+            $newBooks = Book::with(['category', 'media'])
+                ->latest()
+                ->limit(5)
+                ->get();
+
+            $popularCategories = Category::query()
+                ->select('categories.*', DB::raw('COUNT(borrowings.id) as borrowings_count'))
+                ->join('books', 'books.category_id', '=', 'categories.id')
+                ->join('borrowings', 'borrowings.book_id', '=', 'books.id')
+                ->withCount('books')
+                ->groupBy('categories.id', 'categories.name', 'categories.slug', 'categories.description', 'categories.status', 'categories.created_at', 'categories.updated_at')
+                ->orderByDesc('borrowings_count')
+                ->limit(5)
+                ->get();
+
+            $maxCategoryBorrowings = max((int) $popularCategories->max('borrowings_count'), 1);
+
+            return view('dashboard.index', compact(
+                'stats',
+                'needsAttention',
+                'todaySummary',
+                'chartLabels',
+                'chartBorrowings',
+                'chartReturns',
+                'chartOverdue',
+                'overdueBorrowings',
+                'recentBorrowings',
+                'mostBorrowedBooks',
+                'lowStockBooks',
+                'newBooks',
+                'popularCategories',
+                'maxCategoryBorrowings'
+            ));
         }
 
         // Member dashboard logic
