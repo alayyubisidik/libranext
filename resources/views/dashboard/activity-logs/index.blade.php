@@ -76,6 +76,7 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
@@ -86,6 +87,7 @@
             <tbody class="bg-white divide-y divide-gray-200 text-sm text-gray-700">
                 @forelse ($activities as $activity)
                     <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ $loop->iteration }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $activity->created_at->format('Y-m-d H:i:s') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if($activity->causer)
@@ -156,7 +158,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-10 text-center text-gray-400">No activity logs found.</td>
+                        <td colspan="6" class="px-6 py-10 text-center text-gray-400">No activity logs found.</td>
                     </tr>
                 @endforelse
             </tbody>
