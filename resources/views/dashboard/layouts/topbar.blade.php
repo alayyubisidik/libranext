@@ -14,6 +14,7 @@
     <div class="flex items-center gap-4">
         <div class="relative" x-data="{ userMenuOpen: false }">
             <button @click="userMenuOpen = !userMenuOpen" class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none">
+                <img src="{{ user()->avatar_url }}" alt="{{ user()->name }}" class="h-8 w-8 object-cover rounded-full border border-gray-200">
                 <span class="hidden sm:block">{{ user()->name }}</span>
                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
@@ -32,7 +33,7 @@
                     {{ user()->hasRole('admin') ? 'Administrator' : 'Member' }}
                 </div>
                 
-                {{-- <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a> --}}
+                <a href="{{ route('dashboard.profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
                 
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

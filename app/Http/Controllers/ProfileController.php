@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\AlertService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
+        return view('dashboard.profile.edit', [
             'user' => $request->user(),
         ]);
     }
@@ -26,35 +27,24 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        
+        $user->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
+        
+        if ($request->boolean('remove_avatar')) {
+            $user->clearMediaCollection('avatar');
+        } elseif ($request->hasFile('avatar')) {
+            $user->addMediaFromRequest('avatar')->toMediaCollection('avatar');
+        }
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
+        AlertService::updated('Profile updated successfully.');
 
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        return Redirect::route('dashboard.profile.edit');
     }
 }

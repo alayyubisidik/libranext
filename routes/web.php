@@ -42,9 +42,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('dashboard/member/borrow', [BorrowingController::class, 'memberStore'])->name('dashboard.member.borrow.store');
     Route::delete('dashboard/member/borrow/{borrowing}', [BorrowingController::class, 'memberDestroy'])->name('dashboard.member.borrow.destroy');
 
+    // Profile routes (accessible by both admin and member)
+    Route::get('dashboard/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('dashboard.profile.edit');
+    Route::put('dashboard/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('dashboard.profile.update');
+
     Route::middleware(['role.admin'])->prefix('dashboard')->name('dashboard.')->group(function () {
         Route::resource('categories', CategoryController::class)->except(['show']);
+        Route::post('books/bulk-status', [BookController::class, 'bulkStatus'])->name('books.bulk-status');
         Route::resource('books', BookController::class)->except(['show']);
+        Route::post('books/{book}/stock', [BookController::class, 'updateStock'])->name('books.stock.update');
         Route::resource('members', MemberController::class);
         Route::resource('borrowings', BorrowingController::class)->only(['index', 'create', 'store', 'show']);
         Route::post('borrowings/{borrowing}/confirm', [BorrowingController::class, 'confirmBook'])->name('borrowings.confirm');
