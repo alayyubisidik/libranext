@@ -146,6 +146,7 @@ class BorrowingController extends Controller
     {
         $search = $request->input('search');
         $status = $request->input('status');
+        $sort   = $request->input('sort', 'borrow_date_desc');
 
         $borrowings = Borrowing::with(['user', 'book', 'processedBy'])
             ->when($search, function ($query) use ($search) {
@@ -156,7 +157,8 @@ class BorrowingController extends Controller
                 });
             })
             ->when($status, fn($query) => $query->where('status', $status))
-            ->latest()
+            ->when($sort === 'borrow_date_asc', fn($query) => $query->orderBy('borrow_date', 'asc'))
+            ->when($sort === 'borrow_date_desc' || !$sort, fn($query) => $query->orderBy('borrow_date', 'desc'))
             ->paginate(10)
             ->withQueryString();
 
@@ -295,6 +297,8 @@ class BorrowingController extends Controller
     }
 
 
+
+
     public function returnBook(Borrowing $borrowing)
     {
         if ($borrowing->status === 'returned') {
@@ -306,7 +310,7 @@ class BorrowingController extends Controller
         DB::transaction(function () use ($borrowing) {
             // TESTING ONLY:
             // Anggap buku dikembalikan pada 22 Agustus 2026 pukul 10:00
-            $returnedAt = Carbon::parse('2026-08-31 10:00:00');
+            $returnedAt = Carbon::parse('2026-09-05 10:00:00');
 
             $overdueDays = 0;
 
@@ -325,7 +329,7 @@ class BorrowingController extends Controller
             if ($overdueDays > 0) {
                 $ratePerDay = 500;
 
-                $fine = Fine::create([
+                Fine::create([
                     'borrowing_id' => $borrowing->id,
                     'rate_per_day' => $ratePerDay,
                     'overdue_days' => $overdueDays,
@@ -333,11 +337,6 @@ class BorrowingController extends Controller
                     'status'       => 'unpaid',
                 ]);
             }
-
-            activity()
-                ->performedOn($borrowing)
-                ->causedBy(user())
-                ->log('Admin marked book as returned');
         });
 
         AlertService::updated('Book returned successfully.');

@@ -4,6 +4,30 @@
 
 @section('content')
 
+<!-- Fine Summary -->
+<div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div class="text-sm font-medium text-gray-500 mb-1">Total Unpaid</div>
+        <div class="text-2xl font-bold text-red-600">{{ $totalUnpaid }}</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div class="text-sm font-medium text-gray-500 mb-1">Total Paid</div>
+        <div class="text-2xl font-bold text-green-600">{{ $totalPaid }}</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div class="text-sm font-medium text-gray-500 mb-1">Total Waived</div>
+        <div class="text-2xl font-bold text-gray-600">{{ $totalWaived }}</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div class="text-sm font-medium text-gray-500 mb-1">Outstanding Amount</div>
+        <div class="text-2xl font-bold text-gray-900">Rp{{ number_format($outstandingAmount, 0, ',', '.') }}</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <div class="text-sm font-medium text-gray-500 mb-1">Total Amount</div>
+        <div class="text-2xl font-bold text-blue-600">Rp{{ number_format($totalAmount, 0, ',', '.') }}</div>
+    </div>
+</div>
+
 <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
     <div class="flex-1 w-full md:w-auto">
         <form action="{{ route('dashboard.fines.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3" novalidate>
@@ -22,11 +46,18 @@
                 <option value="waived" {{ request('status') == 'waived' ? 'selected' : '' }}>Waived</option>
             </select>
 
+            <select name="sort" class="block w-full sm:w-48 py-2 px-3 border border-gray-300 bg-white rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest Added</option>
+                <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest Added</option>
+                <option value="amount_asc" {{ request('sort') == 'amount_asc' ? 'selected' : '' }}>Amount Lowest → Highest</option>
+                <option value="amount_desc" {{ request('sort') == 'amount_desc' ? 'selected' : '' }}>Amount Highest → Lowest</option>
+            </select>
+
             <button type="submit" class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50">
                 Filter
             </button>
 
-            @if(request('search') || request('status') !== 'unpaid')
+            @if(request('search') || request('status') !== 'unpaid' || (request('sort') && request('sort') !== 'newest'))
                 <a href="{{ route('dashboard.fines.index') }}" class="inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
                     Clear
                 </a>

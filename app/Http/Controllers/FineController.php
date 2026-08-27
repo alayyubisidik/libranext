@@ -18,6 +18,23 @@ class FineController extends Controller
     {
         $search = $request->input('search');
         $status = $request->input('status'); // Default show all
+        $sort = $request->input('sort', 'newest'); // Default to newest
+
+        // Get Fine Summary based on current search & filter
+        $summaryQuery = Fine::query()
+            ->when($search, function ($query) use ($search) {
+                $query->whereHas('borrowing', function ($q) use ($search) {
+                    $q->where('borrow_code', 'like', "%{$search}%")
+                      ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%"))
+                      ->orWhereHas('book', fn ($b) => $b->where('title', 'like', "%{$search}%"));
+                });
+            });
+
+        $totalUnpaid = (clone $summaryQuery)->where('status', 'unpaid')->count();
+        $totalPaid = (clone $summaryQuery)->where('status', 'paid')->count();
+        $totalWaived = (clone $summaryQuery)->where('status', 'waived')->count();
+        $outstandingAmount = (clone $summaryQuery)->where('status', 'unpaid')->sum('amount');
+        $totalAmount = (clone $summaryQuery)->whereIn('status', ['paid', 'unpaid'])->sum('amount');
 
         $fines = Fine::with(['borrowing.user', 'borrowing.book'])
             ->when($search, function ($query) use ($search) {
@@ -28,11 +45,27 @@ class FineController extends Controller
                 });
             })
             ->when($status, fn ($query) => $query->where('status', $status))
-            ->latest()
+            ->when($sort, function ($query) use ($sort) {
+                switch ($sort) {
+                    case 'amount_asc':
+                        $query->orderBy('amount', 'asc');
+                        break;
+                    case 'amount_desc':
+                        $query->orderBy('amount', 'desc');
+                        break;
+                    case 'oldest':
+                        $query->orderBy('created_at', 'asc');
+                        break;
+                    case 'newest':
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                }
+            })
             ->paginate(10)
             ->withQueryString();
 
-        return view('dashboard.fines.index', compact('fines'));
+        return view('dashboard.fines.index', compact('fines', 'totalUnpaid', 'totalPaid', 'totalWaived', 'outstandingAmount', 'totalAmount'));
     }
 
     public function show(Fine $fine)
