@@ -1,58 +1,144 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Libranext
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem Manajemen Perpustakaan berbasis web yang dibangun dengan Laravel 13, Tailwind CSS, dan Alpine.js. Mendukung dua peran pengguna (admin dan anggota), manajemen peminjaman buku, denda keterlambatan dengan pembayaran online via Midtrans, dan laporan lengkap.
 
-## About Laravel
+## Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Admin**
+- Manajemen kategori, buku, dan stok
+- Manajemen anggota (member)
+- Konfirmasi peminjaman dan pengembalian buku
+- Manajemen denda — bayar tunai, cicil via Midtrans, atau bebaskan denda
+- Laporan peminjaman, pengembalian, denda, dan pembayaran (export PDF & Excel)
+- Log aktivitas (audit trail)
+- Rekap kehadiran anggota
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Member**
+- Dashboard ringkasan peminjaman aktif dan riwayat
+- Pengajuan peminjaman buku
+- Pembayaran denda online (Midtrans)
+- Notifikasi buku hampir jatuh tempo
+- Edit profil dan foto avatar
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Umum**
+- Kiosk kehadiran (absensi mandiri dengan throttle)
+- Notifikasi in-app real-time
+- Setup wizard admin pertama kali
 
-## Learning Laravel
+## Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Layer | Teknologi |
+|---|---|
+| Framework | Laravel 13 (PHP 8.3+) |
+| Frontend | Blade, Tailwind CSS v3, Alpine.js v3 |
+| Build Tool | Vite |
+| Database | MySQL |
+| Auth & RBAC | Laravel Breeze + Spatie Permission |
+| Media | Spatie MediaLibrary |
+| Audit | Spatie ActivityLog |
+| Payment | Midtrans |
+| PDF Export | barryvdh/laravel-dompdf |
+| Excel Export | Maatwebsite/Excel |
+| Notifikasi Flash | php-flasher/notyf |
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Instalasi
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+### Prasyarat
 
-## Agentic Development
+- PHP >= 8.3
+- Composer
+- Node.js >= 18 & npm
+- MySQL
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Langkah Instalasi
 
-```bash
-composer require laravel/boost --dev
+1. **Clone repository**
+   ```bash
+   git clone <repository-url>
+   cd libranext
+   ```
 
-php artisan boost:install
+2. **Jalankan setup otomatis**
+   ```bash
+   composer run setup
+   ```
+   Perintah ini akan menjalankan `composer install`, menyalin `.env`, generate app key, menjalankan migrasi, `npm install`, dan build aset secara otomatis.
+
+3. **Konfigurasi database**
+
+   Edit file `.env`:
+   ```env
+   DB_DATABASE=libranext
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+
+4. **Konfigurasi Midtrans** _(opsional, untuk pembayaran denda online)_
+   ```env
+   MIDTRANS_SERVER_KEY=
+   MIDTRANS_CLIENT_KEY=
+   MIDTRANS_IS_PRODUCTION=false
+   ```
+
+5. **Seed data awal**
+   ```bash
+   php artisan db:seed
+   ```
+
+6. **Jalankan development server**
+   ```bash
+   composer run dev
+   ```
+   Atau jalankan terpisah:
+   ```bash
+   php artisan serve
+   npm run dev
+   ```
+
+Akses aplikasi di `http://localhost:8000`.
+
+## Akun Default (setelah seeding)
+
+| Peran | Email | Password |
+|---|---|---|
+| Admin | admin@libranext.id | password |
+| Member | budi@libranext.id | password |
+| Member | siti@libranext.id | password |
+
+> Lihat `database/seeders/UserSeeder.php` untuk daftar lengkap akun member.
+
+## Struktur Direktori Penting
+
+```
+app/
+├── Http/Controllers/
+│   ├── Admin/          # Controller khusus admin (laporan, log, kehadiran)
+│   ├── Api/            # Webhook Midtrans
+│   └── Auth/           # Autentikasi (Breeze)
+├── Models/             # User, Book, Category, Borrowing, Fine, Payment, Attendance
+database/
+├── migrations/         # Skema tabel
+├── seeders/            # Data awal (kategori, buku, pengguna, peminjaman)
+resources/views/
+└── dashboard/
+    ├── layouts/        # app, sidebar, topbar, footer
+    ├── admin/          # Halaman admin
+    └── member/         # Halaman member
+routes/
+├── web.php             # Semua route web
+└── auth.php            # Route autentikasi Breeze
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Perintah Artisan Tambahan
 
-## Contributing
+```bash
+# Kirim notifikasi buku hampir jatuh tempo (terjadwal otomatis setiap hari pukul 08:00)
+php artisan notifications:send-due-soon
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Jalankan test
+composer run test
+```
 
-## Code of Conduct
+## Lisensi
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
